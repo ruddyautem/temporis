@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
-import { ToastContainer, Zoom } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import ToastProvider from "@/components/ToastProvider";
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -13,6 +12,9 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "TEMPORIS | Rooms éphémères",
   description: "Communication sécurisée et autodestructible",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -22,23 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' className={`${jetBrainsMono.variable} h-full antialiased`}>
-      <body className='min-h-full flex flex-col'>
+      <body className='min-h-full flex flex-col bg-[#0d1621]'>
         <Providers>{children}</Providers>
-        <ToastContainer
-          position='top-center'
-          theme='dark'
-          hideProgressBar={false}
-          autoClose={2000}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss={false}
-          draggable
-          pauseOnHover
-          transition={Zoom}
-          toastClassName='border border-slate-800 bg-[#0c1620] text-slate-100 font-mono text-[10px] uppercase tracking-wider'
-          progressClassName='bg-emerald-500'
-        />
+        <ToastProvider />
       </body>
     </html>
   );

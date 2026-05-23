@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className='w-full py-8 border-t border-slate-800/50 bg-[#09121a]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-5'>
+    <footer className='w-full py-8 border-t border-slate-700/50 bg-[#0d1621] flex flex-col items-center justify-center gap-5'>
       <div className='flex items-center gap-6'>
         {/* Icône GitHub */}
         <a
@@ -8,7 +8,7 @@ const Footer = () => {
           target='_blank'
           rel='noopener noreferrer'
           className='text-slate-500 hover:text-emerald-400 transition-colors'
-          aria-label='GitHub'
+          aria-label='Ruddy Autem GitHub'
         >
           <svg
             viewBox='0 0 24 24'
@@ -30,7 +30,7 @@ const Footer = () => {
           target='_blank'
           rel='noopener noreferrer'
           className='text-slate-500 hover:text-emerald-400 transition-colors'
-          aria-label='Website'
+          aria-label='Ruddy Autem Portfolio Website'
         >
           <svg
             viewBox='0 0 24 24'
@@ -49,8 +49,8 @@ const Footer = () => {
         </a>
       </div>
 
-      <p className='text-slate-400 text-[11px] uppercase tracking-[0.25em] font-medium text-center px-4'>
-        &copy; {new Date().getFullYear()} AUTEM.DEV. TOUS DROITS RÉSERVÉS.
+      <p className='text-slate-500 text-[11px] uppercase tracking-[0.25em] font-medium text-center px-4'>
+        &copy; {new Date().getFullYear()} AUTEM.DEV - TOUS DROITS RÉSERVÉS.
       </p>
     </footer>
   );
