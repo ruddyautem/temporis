@@ -25,6 +25,7 @@ const Page = () => {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const lastSyncedTtl = useRef<number | undefined>(undefined);
 
@@ -164,14 +165,26 @@ const Page = () => {
     }
   }, [displayMessages, scrollToBottom]);
 
+  // Fix clavier mobile : ajuste la hauteur au visualViewport réel
   useEffect(() => {
-    if (!window.visualViewport) return;
+    const updateLayout = () => {
+      const vv = window.visualViewport;
+      if (!vv || !mainRef.current) return;
+      mainRef.current.style.height = `${vv.height}px`;
+      mainRef.current.style.top = `${vv.offsetTop}px`;
+      scrollToBottom();
+    };
 
-    const handleResize = () => scrollToBottom();
-    window.visualViewport.addEventListener("resize", handleResize);
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    vv.addEventListener("resize", updateLayout);
+    vv.addEventListener("scroll", updateLayout);
+    updateLayout();
 
     return () => {
-      window.visualViewport?.removeEventListener("resize", handleResize);
+      vv.removeEventListener("resize", updateLayout);
+      vv.removeEventListener("scroll", updateLayout);
     };
   }, [scrollToBottom]);
 
@@ -262,7 +275,10 @@ const Page = () => {
   const canSend = isClient && input.trim().length > 0 && !isPending;
 
   return (
-    <main className='flex flex-col h-dvh bg-[#0d1621] text-slate-100 overflow-hidden font-mono'>
+    <main
+      ref={mainRef}
+      className='flex flex-col bg-[#0d1621] text-slate-100 overflow-hidden font-mono fixed inset-x-0'
+    >
       <header className='border-b border-slate-700 p-4 md:p-5 lg:p-6 shrink-0 bg-[#0d1621]/95 backdrop-blur-md z-10'>
         <div className='mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 relative'>
           {/* Mobile Timer */}
@@ -283,7 +299,7 @@ const Page = () => {
             </p>
           </div>
 
-          {/* Share Button - Same style on mobile and desktop */}
+          {/* Share Button */}
           <div className='flex justify-center items-stretch gap-2 md:gap-3'>
             <button
               onClick={copyLink}
@@ -415,7 +431,6 @@ const Page = () => {
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onFocus={scrollToBottom}
             onKeyDown={(e) => {
               if (e.key === "Enter" && canSend) sendMessage({ text: input });
             }}
