@@ -25,6 +25,7 @@ const Page = () => {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const lastSyncedTtl = useRef<number | undefined>(undefined);
@@ -32,6 +33,9 @@ const Page = () => {
   const hasExited = useRef(false);
   const hasAnnouncedJoin = useRef(false);
   const [isClient, setIsClient] = useState(false);
+  const [isUserScrolledUp, setIsUserScrolledUp] = useState(false);
+  const [hasNewMessage, setHasNewMessage] = useState(false);
+  const isUserScrolledUpRef = useRef(false);
 
   const [localEvents, setLocalEvents] = useState<any[]>([]);
 
@@ -153,14 +157,47 @@ const Page = () => {
     (a, b) => a.timestamp - b.timestamp,
   );
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((force = false) => {
+    if (!force && isUserScrolledUpRef.current) return;
     setTimeout(() => {
       scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      setHasNewMessage(false);
     }, 150);
   }, []);
 
+  const handleScrollToBottomClick = useCallback(() => {
+    isUserScrolledUpRef.current = false;
+    setIsUserScrolledUp(false);
+    setHasNewMessage(false);
+    setTimeout(() => {
+      scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 50);
+  }, []);
+
+  // Track whether user has scrolled up
   useEffect(() => {
-    if (displayMessages.length > 0) {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const distanceFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      const scrolledUp = distanceFromBottom > 80;
+      isUserScrolledUpRef.current = scrolledUp;
+      setIsUserScrolledUp(scrolledUp);
+      if (!scrolledUp) setHasNewMessage(false);
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // On new messages: scroll if at bottom, show badge if scrolled up
+  useEffect(() => {
+    if (displayMessages.length === 0) return;
+    if (isUserScrolledUpRef.current) {
+      setHasNewMessage(true);
+    } else {
       scrollToBottom();
     }
   }, [displayMessages, scrollToBottom]);
@@ -172,12 +209,19 @@ const Page = () => {
       if (!vv || !mainRef.current) return;
       mainRef.current.style.height = `${vv.height}px`;
       mainRef.current.style.top = `${vv.offsetTop}px`;
-      scrollToBottom();
+      // Only scroll to bottom on keyboard open if user is already at bottom
+      if (!isUserScrolledUpRef.current) {
+        setTimeout(() => {
+          scrollRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+          });
+        }, 150);
+      }
     };
 
     const vv = window.visualViewport;
     if (!vv) return;
-
     vv.addEventListener("resize", updateLayout);
     vv.addEventListener("scroll", updateLayout);
     updateLayout();
@@ -186,7 +230,7 @@ const Page = () => {
       vv.removeEventListener("resize", updateLayout);
       vv.removeEventListener("scroll", updateLayout);
     };
-  }, [scrollToBottom]);
+  }, []);
 
   useRealtime({
     channels: [roomId],
@@ -360,7 +404,11 @@ const Page = () => {
         </div>
       </header>
 
-      <div className='flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-5 scroll-smooth mx-auto w-full'>
+      {/* Scroll container — now has its own ref */}
+      <div
+        ref={scrollContainerRef}
+        className='flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-5 scroll-smooth mx-auto w-full relative'
+      >
         {!messages ? (
           <div className='flex h-full items-center justify-center text-slate-500 text-[10px] md:text-[12px] uppercase tracking-widest animate-pulse'>
             recherche de signal...
@@ -424,6 +472,30 @@ const Page = () => {
           </>
         )}
       </div>
+
+      {/* New message badge */}
+      {hasNewMessage && isUserScrolledUp && (
+        <div className='absolute bottom-24 left-1/2 -translate-x-1/2 z-20'>
+          <button
+            onClick={handleScrollToBottomClick}
+            className='flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-[#0d1621] font-bold text-[10px] uppercase tracking-widest px-4 py-2 rounded-full shadow-lg transition-all active:scale-95 cursor-pointer'
+          >
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 20 20'
+              fill='currentColor'
+              className='w-3.5 h-3.5'
+            >
+              <path
+                fillRule='evenodd'
+                d='M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z'
+                clipRule='evenodd'
+              />
+            </svg>
+            Nouveau message
+          </button>
+        </div>
+      )}
 
       <footer className='border-t border-slate-700 p-4 md:p-5 lg:p-6 bg-[#0d1621] shrink-0'>
         <div className='flex items-center gap-2 md:gap-4 w-full mx-auto'>
