@@ -85,18 +85,19 @@ const Page = () => {
     if (hasExited.current) return;
     hasExited.current = true;
 
+    const isAlone = otherUsersCountRef.current === 0;
+
     if (username) {
       client.room.leave
         .post({ username }, { query: { roomId } })
         .catch(() => {});
     }
 
-    if (otherUsersCountRef.current === 0) {
+    if (isAlone) {
       client.room.delete(null, { query: { roomId } }).catch(() => {});
     }
 
-    toast.dismiss();
-    router.replace("/");
+    router.replace(isAlone ? "/?destroyed=true" : "/");
   }, [username, roomId, router]);
 
   // Intercept browser close/refresh — native dialog only (unavoidable)
