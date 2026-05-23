@@ -76,14 +76,14 @@ const Lobby = () => {
         <div className="absolute bottom-[-20%] right-[-10%] w-[55%] h-[55%] bg-emerald-600/5 rounded-full blur-[140px]" />
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
-        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl space-y-8 md:space-y-10">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-5 md:p-8">
+        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl space-y-7 md:space-y-10">
           <div className="text-center space-y-3 md:space-y-4">
-            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-400 mb-2">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 md:py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] md:text-xs font-medium text-emerald-400 mb-1.5 md:mb-2">
               <Icon name="shield" />
               <span>Chiffrement de bout en bout</span>
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white">
+            <h1 className="text-[42px] sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white">
               <span className="text-emerald-400">{">"}</span>Tempor
               <span className="text-emerald-400">is</span>
             </h1>
@@ -93,7 +93,7 @@ const Lobby = () => {
           </div>
 
           <div className="bg-[#0d1621]/80 backdrop-blur-xl border border-slate-700/60 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
-            <div className="border-b border-slate-700/60 bg-[#0a1118]/60 px-6 py-4 text-center">
+            <div className="border-b border-slate-700/60 bg-[#0a1118]/60 px-5 py-3.5 md:px-6 md:py-4 text-center">
               <div
                 className={`flex items-center justify-center gap-2 text-[11px] md:text-[12px] uppercase tracking-widest ${statusState.textCls}`}
               >
@@ -110,14 +110,14 @@ const Lobby = () => {
               </div>
             </div>
 
-            <div className="p-8 sm:p-10 md:p-12 space-y-8 md:space-y-10">
-              <div className="space-y-4 md:space-y-5">
+            <div className="p-6 sm:p-8 md:p-12 space-y-7 md:space-y-10">
+              <div className="space-y-3.5 md:space-y-5">
                 <label className="flex items-center justify-center text-center text-slate-500 text-[10px] md:text-[11px] uppercase tracking-[0.4em]">
                   <Icon name="user" className="w-3.5 h-3.5 mr-2" />
                   Votre identité anonyme
                 </label>
-                <div className="bg-[#0a1118] border border-slate-700 p-5 md:p-6 text-base md:text-lg text-emerald-200/80 flex items-center justify-center transition-all rounded-xl">
-                  <div className="inline-flex items-center gap-4">
+                <div className="bg-[#0a1118] border border-slate-700 p-4 sm:p-5 md:p-6 text-base md:text-lg text-emerald-200/80 flex items-center justify-center transition-all rounded-xl">
+                  <div className="inline-flex items-center gap-3.5 md:gap-4">
                     <span className="truncate font-bold tracking-tight font-mono">
                       {username}
                     </span>
@@ -126,13 +126,13 @@ const Lobby = () => {
                 </div>
               </div>
 
-              <div className="space-y-4 md:space-y-5">
+              <div className="space-y-3.5 md:space-y-5">
                 <label className="flex items-center justify-center text-center text-slate-500 text-[10px] md:text-[11px] uppercase tracking-[0.4em]">
                   <Icon name="clock" />
                   <span className="ml-2">Durée de vie de la room</span>
                 </label>
 
-                <div className="grid grid-cols-3 gap-3 md:gap-4">
+                <div className="grid grid-cols-3 gap-2.5 sm:gap-3 md:gap-4">
                   {TTL_OPTIONS.map((minutes) => {
                     const isSelected = minutes === selectedTtl;
                     return (
@@ -140,7 +140,7 @@ const Lobby = () => {
                         key={minutes}
                         onClick={() => setSelectedTtl(minutes)}
                         disabled={isPending}
-                        className={`relative overflow-hidden rounded-xl p-4 md:p-5 text-center transition-all duration-200 border cursor-pointer ${
+                        className={`relative overflow-hidden rounded-xl p-3.5 sm:p-4 md:p-5 text-center transition-all duration-200 border cursor-pointer ${
                           isSelected
                             ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                             : "bg-slate-800/40 border-slate-600 text-slate-300 hover:border-emerald-500/30"
@@ -149,7 +149,7 @@ const Lobby = () => {
                         <span className="flex flex-col md:flex-row justify-center items-center text-xl md:text-2xl font-bold leading-none uppercase tracking-wider">
                           {minutes}
                           <span
-                            className={`text-[10px] md:ml-1 md:text-[11px] mt-2 font-medium uppercase tracking-widest ${isSelected ? "text-emerald-500/70" : "text-slate-600"}`}
+                            className={`text-[10px] md:ml-1 md:text-[11px] mt-1.5 md:mt-2 font-medium uppercase tracking-widest ${isSelected ? "text-emerald-500/70" : "text-slate-600"}`}
                           >
                             min
                           </span>
@@ -170,15 +170,15 @@ const Lobby = () => {
                     : toast.info("Veuillez sélectionner une durée de vie.")
                 }
                 disabled={isPending}
-                className="w-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 p-5 md:p-6 text-[12px] md:text-[13px] font-bold uppercase tracking-[0.3em] hover:bg-emerald-500/20 transition-all disabled:opacity-50 cursor-pointer active:scale-95 rounded-xl shadow-lg shadow-emerald-900/20"
+                className="w-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 p-4 sm:p-5 md:p-6 text-[11px] sm:text-[12px] md:text-[13px] font-bold uppercase tracking-[0.25em] md:tracking-[0.3em] hover:bg-emerald-500/20 transition-all disabled:opacity-50 cursor-pointer active:scale-95 rounded-xl shadow-lg shadow-emerald-900/20"
               >
                 {isPending ? "Initialisation..." : "Créer votre room éphémère"}
               </button>
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-4 opacity-70">
-            <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+          <div className="flex flex-col items-center gap-3 md:gap-4 opacity-70">
+            <div className="flex items-center gap-3 sm:gap-6 flex-wrap justify-center">
               {TRUST_FEATURES.map((feature, idx) => (
                 <React.Fragment key={idx}>
                   <div className="flex items-center gap-1.5 text-[10px] md:text-[11px] text-slate-500 uppercase tracking-wider">
@@ -186,7 +186,7 @@ const Lobby = () => {
                     {feature.label}
                   </div>
                   {idx < TRUST_FEATURES.length - 1 && (
-                    <div className="w-px h-3 bg-slate-700" />
+                    <div className="w-px h-3 bg-slate-700 hidden sm:block" />
                   )}
                 </React.Fragment>
               ))}
