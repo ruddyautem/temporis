@@ -152,11 +152,28 @@ const Page = () => {
     (a, b) => a.timestamp - b.timestamp,
   );
 
+  const scrollToBottom = useCallback(() => {
+    setTimeout(() => {
+      scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 150);
+  }, []);
+
   useEffect(() => {
     if (displayMessages.length > 0) {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+      scrollToBottom();
     }
-  }, [displayMessages]);
+  }, [displayMessages, scrollToBottom]);
+
+  useEffect(() => {
+    if (!window.visualViewport) return;
+
+    const handleResize = () => scrollToBottom();
+    window.visualViewport.addEventListener("resize", handleResize);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
+  }, [scrollToBottom]);
 
   useRealtime({
     channels: [roomId],
@@ -392,13 +409,13 @@ const Page = () => {
         )}
       </div>
 
-      {/* --- UPDATED FOOTER --- */}
       <footer className='border-t border-slate-700 p-4 md:p-5 lg:p-6 bg-[#0d1621] shrink-0'>
         <div className='flex items-center gap-2 md:gap-4 w-full mx-auto'>
           <input
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onFocus={scrollToBottom}
             onKeyDown={(e) => {
               if (e.key === "Enter" && canSend) sendMessage({ text: input });
             }}
