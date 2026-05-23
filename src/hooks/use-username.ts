@@ -13,7 +13,6 @@ const ANIMAL = [
   "requin",
   "tigre",
   "aigle",
-  "vipère",
 ];
 
 const ADJECTIVES = [
