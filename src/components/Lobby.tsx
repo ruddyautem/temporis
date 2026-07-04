@@ -44,7 +44,7 @@ export default function Lobby() {
       toast.error("ROOM COMPLÈTE", { toastId: "f" });
 
     if (destroyed || error) window.history.replaceState({}, "", "/");
-  }, [searchParams]);
+  }, []);
 
   const { mutate: createRoom, isPending } = useMutation<
     { roomId: string },
@@ -97,7 +97,6 @@ export default function Lobby() {
 
       <div className='relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6 sm:py-12'>
         <div className='w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6'>
-
           {/* Header */}
           <div className='text-center'>
             <h1 className='text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-none'>
@@ -125,7 +124,6 @@ export default function Lobby() {
 
           {/* Main card */}
           <div className='rounded-2xl border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden'>
-
             {/* Identity row */}
             <div className='flex items-center justify-between border-b border-slate-700/50 bg-[#060d14]/60 px-4 py-4 sm:px-6 sm:py-5 gap-3 flex-col md:flex-row'>
               <div className='flex items-center gap-2 text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-widest text-slate-500 shrink-0'>
@@ -142,7 +140,6 @@ export default function Lobby() {
             </div>
 
             <div className='p-5 sm:p-7 md:p-10 space-y-7 sm:space-y-8 md:space-y-9'>
-
               {/* TTL section */}
               <div>
                 {/* Mobile label */}
@@ -249,7 +246,6 @@ export default function Lobby() {
               </Fragment>
             ))}
           </div>
-
         </div>
       </div>
 

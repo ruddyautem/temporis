@@ -68,13 +68,10 @@ const Page = () => {
       }
       toast.dismiss();
       if (reason === "destroyed") {
-        toast.error("LA ROOM A ÉTÉ DÉTRUITE", { toastId: "destruct-toast" });
         router.replace("/?destroyed=true");
       } else if (reason === "full") {
-        toast.error("LA ROOM EST COMPLÈTE", { toastId: "full-toast" });
         router.replace("/?error=room-full");
       } else {
-        toast.error("ROOM INTROUVABLE OU TERMINÉE", { toastId: "error-toast" });
         router.replace("/?error=room-not-found");
       }
     },
