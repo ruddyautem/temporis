@@ -82,7 +82,7 @@ export default function Lobby() {
       </div>
 
       <div className='relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6 sm:py-12'>
-        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6 sm:space-y-8 '>
+        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6  '>
           <div className='text-center'>
             <h1 className='text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-none'>
               <span className='text-emerald-400'>{">"}</span>
@@ -93,9 +93,7 @@ export default function Lobby() {
             </p>
             <div className='mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-1 sm:px-4 sm:py-1.5 text-[9px] sm:text-[11px] md:text-xs font-medium uppercase tracking-widest text-emerald-400'>
               <Icon name='shield' />
-              <span className='xs:hidden'>
-                Chiffrement de bout en bout
-              </span>
+              <span className='xs:hidden'>Chiffrement de bout en bout</span>
             </div>
           </div>
 
