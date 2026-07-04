@@ -4,15 +4,14 @@ import { Elysia, t } from "elysia";
 import { nanoid } from "nanoid";
 import { authMiddleware } from "./auth";
 
-// --- Schemas & Helpers ---
 const RoomIdQuery = t.Object({ roomId: t.String() });
 const UsernameBody = t.Object({ username: t.String() });
 
 const metaKey = (id: string) => `meta:${id}`;
 const msgKey = (id: string) => `messages:${id}`;
 
-// --- Room Routes ---
 const rooms = new Elysia({ prefix: "/room" })
+  // CREATE - no auth needed
   .post(
     "/create",
     async ({ query: { ttl = "15" } }) => {
@@ -30,20 +29,66 @@ const rooms = new Elysia({ prefix: "/room" })
     { query: t.Object({ ttl: t.Optional(t.String()) }) },
   )
 
-  .use(authMiddleware)
-
+  // JOIN - BEFORE authMiddleware so it can add the token
   .post(
     "/join",
-    async ({ body, auth: { roomId } }) => {
+    async ({ body, query: { roomId }, cookie }) => {
+      const token = cookie["x-auth-token"].value as string | undefined;
+
+      if (!token) {
+        return new Response(JSON.stringify({ error: "No auth token" }), {
+          status: 401,
+        });
+      }
+
+      const meta = await redis.hgetall(metaKey(roomId));
+
+      if (!meta) {
+        return new Response(JSON.stringify({ error: "Room not found" }), {
+          status: 404,
+        });
+      }
+
+      // Add token to connected list
+      const connected: string[] = (meta.connected as string[]) || [];
+
+      if (!connected.includes(token)) {
+        const updatedConnected = [...connected, token];
+        const remaining = await redis.ttl(metaKey(roomId));
+
+        await redis.hset(metaKey(roomId), { connected: updatedConnected });
+
+        if (remaining > 0) {
+          await redis.expire(metaKey(roomId), remaining);
+        }
+      }
+
       await realtime.channel(roomId).emit("chat.join", body);
       return { success: true };
     },
     { body: UsernameBody, query: RoomIdQuery },
   )
 
+  // NOW apply auth middleware for everything else
+  .use(authMiddleware)
+
   .post(
     "/leave",
-    async ({ body, auth: { roomId } }) => {
+    async ({ body, auth: { roomId, token } }) => {
+      const meta = await redis.hgetall(metaKey(roomId));
+
+      if (meta) {
+        const connected: string[] = (meta.connected as string[]) || [];
+        const updatedConnected = connected.filter((t) => t !== token);
+        const remaining = await redis.ttl(metaKey(roomId));
+
+        await redis.hset(metaKey(roomId), { connected: updatedConnected });
+
+        if (remaining > 0) {
+          await redis.expire(metaKey(roomId), remaining);
+        }
+      }
+
       await realtime.channel(roomId).emit("chat.leave", body);
       return { success: true };
     },
@@ -66,7 +111,6 @@ const rooms = new Elysia({ prefix: "/room" })
     return { success: true };
   });
 
-// --- Message Routes ---
 const messages = new Elysia({ prefix: "/messages" })
   .use(authMiddleware)
 
