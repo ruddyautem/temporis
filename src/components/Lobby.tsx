@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect, Fragment } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUsername from "@/hooks/use-username";
@@ -45,8 +46,9 @@ export default function Lobby() {
     if (destroyed || error) window.history.replaceState({}, "", "/");
   }, []);
 
-  const { mutate: createRoom, isPending } = useMutation({
-    mutationFn: async (minutes: Ttl) => {
+  // Explicit generics so `mutate` knows it receives a `Ttl`
+  const { mutate: createRoom, isPending } = useMutation<void, Error, Ttl>({
+    mutationFn: async (minutes) => {
       const res = await client.room.create.post(
         {},
         { query: { ttl: String(minutes) } },
@@ -69,8 +71,8 @@ export default function Lobby() {
     <main className='relative flex min-h-dvh flex-col bg-[#0d1621] text-slate-100 overflow-hidden selection:bg-emerald-500/20'>
       {/* Ambient background */}
       <div className='pointer-events-none absolute inset-0'>
-        <div className='absolute -top-32 -left-32 w-125 h-125 rounded-full bg-emerald-500/4 blur-[100px]' />
-        <div className='absolute -bottom-32 -right-32 w-125 h-125 rounded-full bg-emerald-600/4 blur-[100px]' />
+        <div className='absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-emerald-500/[0.04] blur-[100px]' />
+        <div className='absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-emerald-600/[0.04] blur-[100px]' />
         <div
           className='absolute inset-0 opacity-[0.03]'
           style={{
@@ -82,7 +84,9 @@ export default function Lobby() {
       </div>
 
       <div className='relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6 sm:py-12'>
-        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6  '>
+        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg space-y-6'>
+
+          {/* Header */}
           <div className='text-center'>
             <h1 className='text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-none'>
               <span className='text-emerald-400'>{">"}</span>
@@ -93,22 +97,23 @@ export default function Lobby() {
             </p>
             <div className='mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-1 sm:px-4 sm:py-1.5 text-[9px] sm:text-[11px] md:text-xs font-medium uppercase tracking-widest text-emerald-400'>
               <Icon name='shield' />
-              <span className='xs:hidden'>Chiffrement de bout en bout</span>
+              <span>Chiffrement de bout en bout</span>
             </div>
           </div>
 
-          {/* ── Alert banner ── */}
+          {/* Alert banner */}
           {status && (
             <div
-              className={`flex items-center gap-2.5 rounded-xl border border-current/20 bg-current/5 px-4 py-3 text-xs sm:text-sm md:text-base ${status.cls}`}
+              className={`flex items-center gap-2.5 rounded-xl border border-current/20 bg-current/5 px-4 py-3 text-xs sm:text-sm ${status.cls}`}
             >
               <span className='h-1.5 w-1.5 shrink-0 rounded-full bg-current animate-pulse' />
               {status.text}
             </div>
           )}
 
-          {/* ── Main card ── */}
+          {/* Main card */}
           <div className='rounded-2xl border border-slate-700/50 bg-slate-900/60 backdrop-blur-xl shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden'>
+
             {/* Identity row */}
             <div className='flex items-center justify-between border-b border-slate-700/50 bg-[#060d14]/60 px-4 py-4 sm:px-6 sm:py-5 gap-3 flex-col md:flex-row'>
               <div className='flex items-center gap-2 text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-widest text-slate-500 shrink-0'>
@@ -125,9 +130,10 @@ export default function Lobby() {
             </div>
 
             <div className='p-5 sm:p-7 md:p-10 space-y-7 sm:space-y-8 md:space-y-9'>
+
               {/* TTL section */}
               <div>
-                {/* Mobile/Tablet: centered with bars on both sides */}
+                {/* Mobile label */}
                 <div className='mb-4 sm:mb-5 flex items-center gap-3 md:hidden'>
                   <div className='h-px flex-1 bg-slate-700/60' />
                   <span className='text-[9px] sm:text-[10px] uppercase tracking-widest text-slate-500 whitespace-nowrap'>
@@ -135,6 +141,7 @@ export default function Lobby() {
                   </span>
                   <div className='h-px flex-1 bg-slate-700/60' />
                 </div>
+                {/* Desktop label */}
                 <div className='mb-4 sm:mb-5 hidden md:flex items-center gap-3'>
                   <span className='text-[10px] md:text-[11px] uppercase tracking-widest text-slate-500 whitespace-nowrap'>
                     Durée de vie
@@ -206,17 +213,17 @@ export default function Lobby() {
                     : toast.info("Choisissez une durée d'abord.")
                 }
                 disabled={isPending}
-                className='group relative w-full overflow-hidden rounded-xl border border-emerald-500/25 bg-emerald-500/10 py-4 sm:py-4.5 text-[11px] sm:text-[12px] md:text-[13px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] text-emerald-300 transition-all hover:bg-emerald-500/18 hover:border-emerald-500/40 active:scale-[0.98] disabled:opacity-40 cursor-pointer'
+                className='group relative w-full overflow-hidden rounded-xl border border-emerald-500/25 bg-emerald-500/10 py-4 text-[11px] sm:text-[12px] md:text-[13px] font-bold uppercase tracking-[0.25em] sm:tracking-[0.3em] text-emerald-300 transition-all hover:bg-emerald-500/[0.18] hover:border-emerald-500/40 active:scale-[0.98] disabled:opacity-40 cursor-pointer'
               >
                 <span className='relative z-10'>
                   {isPending ? "Initialisation…" : "Créer la room"}
                 </span>
-                <div className='absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-emerald-500/5 to-transparent transition-transform duration-700 group-hover:translate-x-full' />
+                <div className='absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-emerald-500/5 to-transparent transition-transform duration-700 group-hover:translate-x-full' />
               </button>
             </div>
           </div>
 
-          {/* ── Trust strip ── */}
+          {/* Trust strip */}
           <div className='flex items-center justify-center gap-3 sm:gap-5 flex-wrap px-2'>
             {FEATURES.map((f, i) => (
               <Fragment key={f.label}>
@@ -230,6 +237,7 @@ export default function Lobby() {
               </Fragment>
             ))}
           </div>
+
         </div>
       </div>
 
