@@ -32,8 +32,6 @@ export default function Lobby() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [ttl, setTtl] = useState<Ttl>();
-  // Track whether we've already navigated to avoid double-firing
-  const navigating = React.useRef(false);
 
   useEffect(() => {
     const destroyed = searchParams.get("destroyed") === "true";
@@ -46,40 +44,35 @@ export default function Lobby() {
       toast.error("ROOM COMPLÈTE", { toastId: "f" });
 
     if (destroyed || error) window.history.replaceState({}, "", "/");
-  }, []);
+  }, [searchParams]);
 
-  const { mutate: createRoom, isPending } = useMutation<void, Error, Ttl>({
-    // Unique key prevents stale state from a previous navigation cycle
+  const { mutate: createRoom, isPending } = useMutation<
+    { roomId: string },
+    Error,
+    Ttl
+  >({
     mutationKey: ["createRoom"],
     mutationFn: async (minutes) => {
-      if (navigating.current) return;
-
       const res = await client.room.create.post(
         {},
         { query: { ttl: String(minutes) } },
       );
 
       if (res.status === 200 && res.data?.roomId) {
-        navigating.current = true;
-        toast.success("Room créée !");
-        // Use replace instead of push so back-button doesn't re-trigger creation
-        router.push(`/room/${res.data.roomId}`);
+        return { roomId: res.data.roomId };
       } else {
-        throw new Error(
-          `Échec de création (status ${res.status})`
-        );
+        throw new Error(`Échec de création (status ${res.status})`);
       }
     },
-    onError: () => {
-      navigating.current = false;
+    onSuccess: (data) => {
+      toast.success("Room créée !");
+      router.push(`/room/${data.roomId}`);
+    },
+    onError: (error) => {
+      console.error("Room creation error:", error);
       toast.error("Erreur lors de la création.");
     },
   });
-
-  // Reset navigation guard when component mounts fresh
-  useEffect(() => {
-    navigating.current = false;
-  }, []);
 
   const destroyedParam = searchParams.get("destroyed") === "true";
   const errorParam = searchParams.get("error");
