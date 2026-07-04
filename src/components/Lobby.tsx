@@ -32,6 +32,8 @@ export default function Lobby() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [ttl, setTtl] = useState<Ttl>();
+  // Track whether we've already navigated to avoid double-firing
+  const navigating = React.useRef(false);
 
   useEffect(() => {
     const destroyed = searchParams.get("destroyed") === "true";
@@ -46,21 +48,38 @@ export default function Lobby() {
     if (destroyed || error) window.history.replaceState({}, "", "/");
   }, []);
 
-  // Explicit generics so `mutate` knows it receives a `Ttl`
   const { mutate: createRoom, isPending } = useMutation<void, Error, Ttl>({
+    // Unique key prevents stale state from a previous navigation cycle
+    mutationKey: ["createRoom"],
     mutationFn: async (minutes) => {
+      if (navigating.current) return;
+
       const res = await client.room.create.post(
         {},
         { query: { ttl: String(minutes) } },
       );
+
       if (res.status === 200 && res.data?.roomId) {
+        navigating.current = true;
         toast.success("Room créée !");
+        // Use replace instead of push so back-button doesn't re-trigger creation
         router.push(`/room/${res.data.roomId}`);
       } else {
-        toast.error("Erreur lors de la création.");
+        throw new Error(
+          `Échec de création (status ${res.status})`
+        );
       }
     },
+    onError: () => {
+      navigating.current = false;
+      toast.error("Erreur lors de la création.");
+    },
   });
+
+  // Reset navigation guard when component mounts fresh
+  useEffect(() => {
+    navigating.current = false;
+  }, []);
 
   const destroyedParam = searchParams.get("destroyed") === "true";
   const errorParam = searchParams.get("error");

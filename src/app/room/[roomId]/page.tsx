@@ -38,9 +38,7 @@ const Page = () => {
   const isUserScrolledUpRef = useRef(false);
   const otherUsersCountRef = useRef(0);
 
-  // Custom leave confirmation modal state
   const [showLeaveModal, setShowLeaveModal] = useState(false);
-
   const [localEvents, setLocalEvents] = useState<any[]>([]);
 
   useEffect(() => {
@@ -100,32 +98,22 @@ const Page = () => {
     router.replace(isAlone ? "/?destroyed=true" : "/");
   }, [username, roomId, router]);
 
-  // Intercept browser close/refresh — native dialog only (unavoidable)
-  // For tab close when alone, we still fire delete via keepalive fetch
+  // Beacon on tab close / refresh — server handles "delete if empty" logic
   useEffect(() => {
     if (!username) return;
-    const handleTabClose = () => {
-      fetch(`/api/room/leave?roomId=${roomId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
-        keepalive: true,
-      }).catch(() => {});
 
-      if (otherUsersCountRef.current === 0) {
-        fetch(`/api/room?roomId=${roomId}`, {
-          method: "DELETE",
-          keepalive: true,
-        }).catch(() => {});
-      }
-    };
+    const handleBeforeUnload = () => {
+      // Tell the server this user left
+      navigator.sendBeacon(
+        `/api/room/leave?roomId=${roomId}`,
+        new Blob([JSON.stringify({ username })], { type: "application/json" }),
+      );
 
-    // Only block unload (show native dialog) if user is alone
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      handleTabClose();
-      if (otherUsersCountRef.current === 0) {
-        e.preventDefault();
-      }
+      // Ask the server to delete the room if nobody is left
+      navigator.sendBeacon(
+        `/api/room/delete-if-empty?roomId=${roomId}`,
+        new Blob([], { type: "application/json" }),
+      );
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -136,13 +124,11 @@ const Page = () => {
   useEffect(() => {
     const handlePopState = () => {
       if (otherUsersCountRef.current === 0 && !hasExited.current) {
-        // Push state back so user stays on page while modal is shown
         window.history.pushState(null, "", window.location.href);
         setShowLeaveModal(true);
       }
     };
 
-    // Push a state so popstate fires on back press
     window.history.pushState(null, "", window.location.href);
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -373,11 +359,9 @@ const Page = () => {
 
   return (
     <>
-      {/* Custom leave confirmation modal — only shown when alone */}
       {showLeaveModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm font-mono'>
           <div className='mx-4 w-full max-w-sm rounded-2xl border border-slate-700 bg-[#0d1621] p-6 shadow-2xl'>
-            {/* Icon */}
             <div className='mb-4 flex justify-center'>
               <div className='flex h-12 w-12 items-center justify-center rounded-full border border-red-500/30 bg-red-500/10'>
                 <svg
@@ -394,16 +378,12 @@ const Page = () => {
                 </svg>
               </div>
             </div>
-
-            {/* Title */}
             <p className='mb-1 text-center text-[11px] uppercase tracking-[0.3em] text-slate-500'>
               Attention
             </p>
             <h2 className='mb-2 text-center text-[15px] font-bold uppercase tracking-widest text-slate-100'>
               Quitter la session ?
             </h2>
-
-            {/* Body */}
             <p className='mb-6 text-center text-[11px] leading-relaxed text-slate-400'>
               Vous êtes{" "}
               <span className='font-bold text-red-400'>
@@ -415,8 +395,6 @@ const Page = () => {
               </span>{" "}
               et tous les messages effacés.
             </p>
-
-            {/* Buttons */}
             <div className='flex flex-col gap-2'>
               <button
                 onClick={() => {
