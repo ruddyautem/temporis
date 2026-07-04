@@ -94,7 +94,7 @@ export default function Lobby() {
             <div className='mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-1 sm:px-4 sm:py-1.5 text-[9px] sm:text-[11px] md:text-xs font-medium uppercase tracking-widest text-emerald-400'>
               <Icon name='shield' />
               <span className='xs:hidden'>
-                Chiffrement de bout en bout actif
+                Chiffrement de bout en bout
               </span>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function Lobby() {
             <div className='flex items-center justify-between border-b border-slate-700/50 bg-[#060d14]/60 px-4 py-4 sm:px-6 sm:py-5 gap-3 flex-col md:flex-row'>
               <div className='flex items-center gap-2 text-[9px] sm:text-[10px] md:text-[11px] uppercase tracking-widest text-slate-500 shrink-0'>
                 <Icon name='user' />
-                <span>Votre Identité</span>
+                <span>Votre Identité Anonyme</span>
               </div>
               <div className='flex items-center gap-2 sm:gap-2.5 min-w-0'>
                 <span className='md:hidden h-2 w-2 shrink-0 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)] animate-pulse' />
