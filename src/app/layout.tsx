@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' className={`${jetBrainsMono.variable} h-full antialiased`}>
+    <html lang='fr' className={`${jetBrainsMono.variable} h-full antialiased`}>
       <body className='min-h-full flex flex-col bg-[#0d1621]'>
         <Providers>{children}</Providers>
         <ToastProvider />

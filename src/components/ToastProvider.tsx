@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function ToastProvider() {
   return (
     <ToastContainer
-      position='top-center'
+      position='top-right'
       theme='dark'
       hideProgressBar={false}
       closeButton={false}
