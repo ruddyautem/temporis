@@ -68,7 +68,7 @@ export default function Lobby() {
         badge={
           <div className='inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-1 sm:px-4 sm:py-1.5 text-[9px] sm:text-[11px] md:text-xs font-medium uppercase tracking-widest text-emerald-400'>
             <Icon name='shield' />
-            <span>Chiffrement de bout en bout</span>
+            <span>Conversations chiffrées</span>
           </div>
         }
       />
