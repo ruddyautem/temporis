@@ -38,7 +38,10 @@ export const useRoomChat = (
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: async ({ text }: { text: string }) => {
       const encrypted = await encryptText(text);
-      await client.messages.post({ sender: username, text: encrypted }, { query: { roomId } });
+      await client.messages.post(
+        { sender: username || "Anonyme", text: encrypted },
+        { query: { roomId } },
+      );
       inputRef.current?.focus();
     },
   });
@@ -57,7 +60,10 @@ export const useRoomChat = (
           otherUsersCountRef.current += 1;
           toast.info(
             <span>
-              <span className='text-emerald-400 font-bold'>{data.username}</span> A REJOINT LA SESSION
+              <span className='text-emerald-400 font-bold'>
+                {data.username}
+              </span>{" "}
+              A REJOINT LA SESSION
             </span>,
             { icon: () => "👋" },
           );
@@ -68,7 +74,8 @@ export const useRoomChat = (
               sender: "SYSTEM",
               clearText: (
                 <>
-                  <span className='text-white font-bold'>{data.username}</span> a rejoint la session
+                  <span className='text-white font-bold'>{data.username}</span>{" "}
+                  a rejoint la session
                 </>
               ),
               timestamp: Date.now(),
@@ -77,10 +84,14 @@ export const useRoomChat = (
         }
 
         if (event === "chat.leave") {
-          otherUsersCountRef.current = Math.max(0, otherUsersCountRef.current - 1);
+          otherUsersCountRef.current = Math.max(
+            0,
+            otherUsersCountRef.current - 1,
+          );
           toast.error(
             <span>
-              <span className='text-red-500 font-bold'>{data.username}</span> A QUITTÉ LA SESSION
+              <span className='text-red-500 font-bold'>{data.username}</span> A
+              QUITTÉ LA SESSION
             </span>,
             { icon: () => "🚪" },
           );
@@ -91,7 +102,10 @@ export const useRoomChat = (
               sender: "SYSTEM",
               clearText: (
                 <>
-                  <span className='text-red-500 font-bold'>{data.username}</span> a quitté la session
+                  <span className='text-red-500 font-bold'>
+                    {data.username}
+                  </span>{" "}
+                  a quitté la session
                 </>
               ),
               timestamp: Date.now(),
@@ -102,9 +116,10 @@ export const useRoomChat = (
     },
   });
 
-  const displayMessages: ChatMessage[] = [...(messages?.messages ?? []), ...systemEvents].sort(
-    (a, b) => a.timestamp - b.timestamp,
-  );
+  const displayMessages: ChatMessage[] = [
+    ...(messages?.messages ?? []),
+    ...systemEvents,
+  ].sort((a, b) => a.timestamp - b.timestamp);
 
   return {
     isLoading: !messages,
