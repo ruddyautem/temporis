@@ -53,7 +53,7 @@ const JoinScreen = ({ username, roomId, onJoin, onDecline }: JoinScreenProps) =>
             Rejoindre<br className='sm:hidden' /> la room
           </Button>
           <Button variant='danger' onClick={onDecline} className='flex-1'>
-            Retour<br className='sm:hidden' /> à l'accueil
+            Retour<br className='sm:hidden' /> à l&apos;accueil
           </Button>
         </div>
       </div>

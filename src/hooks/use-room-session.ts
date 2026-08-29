@@ -72,26 +72,22 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
     },
   });
 
-  // Tab close / refresh: leave, and delete the room too if we're the last one there.
+  // Tab close / refresh: leave the room.
+  // The server will wait 10 seconds before deleting the room to allow for a page refresh.
   useEffect(() => {
     if (!username) return;
 
     const handleTabClose = () => {
-      fetch(`/api/room/leave?roomId=${roomId}`, {
+      fetch(`/api/room/leave?roomId=${roomId}&unload=true`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username }),
         keepalive: true,
       }).catch(() => {});
-
-      if (otherUsersCountRef.current === 0) {
-        fetch(`/api/room?roomId=${roomId}`, { method: "DELETE", keepalive: true }).catch(() => {});
-      }
     };
 
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    const handleBeforeUnload = () => {
       handleTabClose();
-      if (otherUsersCountRef.current === 0) e.preventDefault();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);

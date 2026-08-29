@@ -52,9 +52,12 @@ export default function Lobby() {
       }
       throw new Error(`Échec de création (status ${res.status})`);
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success("Room créée !");
-      router.push(`/room/${data.roomId}`);
+      const { generateRoomKey, exportKeyToBase64 } = await import("@/lib/crypto");
+      const secretKey = await generateRoomKey();
+      const exportedKey = await exportKeyToBase64(secretKey);
+      router.push(`/room/${data.roomId}#key=${exportedKey}`);
     },
     onError: (error) => {
       console.error("Room creation error:", error);
@@ -68,7 +71,7 @@ export default function Lobby() {
         badge={
           <div className='inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-1 sm:px-4 sm:py-1.5 text-[9px] sm:text-[11px] md:text-xs font-medium uppercase tracking-widest text-emerald-400'>
             <Icon name='shield' />
-            <span>Conversations chiffrées</span>
+            <span>Chiffrement de bout en bout (E2EE)</span>
           </div>
         }
       />

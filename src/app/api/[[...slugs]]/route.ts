@@ -34,8 +34,23 @@ const rooms = new Elysia({ prefix: "/room" })
 
   .post(
     "/join",
-    async ({ body, auth: { roomId } }) => {
+    async ({ body, auth: { roomId, token } }) => {
+      // Mark that we joined (so POST /leave knows we came back if we refreshed)
+      await redis.set(`ping:${roomId}:${token}`, "1", { ex: 5 });
+
       await realtime.channel(roomId).emit("chat.join", body);
+      
+      const meta = await redis.hgetall<{ createdAt: number; initialTtl: number }>(metaKey(roomId));
+      if (meta && meta.createdAt && meta.initialTtl) {
+        const absoluteRemaining = Math.max(0, Math.floor((meta.createdAt + meta.initialTtl * 1000 - Date.now()) / 1000));
+        if (absoluteRemaining > 0) {
+          await Promise.all([
+            redis.expire(metaKey(roomId), absoluteRemaining),
+            redis.expire(msgKey(roomId), absoluteRemaining),
+            redis.expire(roomId, absoluteRemaining),
+          ]);
+        }
+      }
       return { success: true };
     },
     { body: UsernameBody, query: RoomIdQuery },
@@ -43,11 +58,50 @@ const rooms = new Elysia({ prefix: "/room" })
 
   .post(
     "/leave",
-    async ({ body, auth: { roomId } }) => {
+    async ({ body, auth: { roomId, token }, query }) => {
+      // If it's a beforeunload event, wait 2 seconds to see if they come back (refresh)
+      if (query.unload) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Check if they re-joined within 2 seconds
+        const ping = await redis.get(`ping:${roomId}:${token}`);
+        if (ping) return { success: true }; // Abort leave, it was just a refresh!
+      }
+
+      const meta = await redis.hgetall<{ connected: string[]; initialTtl: number }>(metaKey(roomId));
+      
+      if (meta && meta.connected) {
+        const newConnected = meta.connected.filter((t) => t !== token);
+        
+        if (newConnected.length === 0) {
+          // Instant destruction (Option B) - deletes the room immediately
+          await Promise.all([
+            realtime.channel(roomId).emit("chat.destroy", { isDestroyed: true }),
+            redis.del(metaKey(roomId), msgKey(roomId), roomId),
+          ]);
+        } else {
+          await redis.hset(metaKey(roomId), { connected: newConnected });
+          const remaining = await redis.ttl(metaKey(roomId));
+          if (remaining > 0) {
+            await Promise.all([
+              redis.expire(metaKey(roomId), remaining),
+              redis.expire(msgKey(roomId), remaining),
+              redis.expire(roomId, remaining),
+            ]);
+          }
+        }
+      }
+
       await realtime.channel(roomId).emit("chat.leave", body);
+      
       return { success: true };
     },
-    { body: UsernameBody, query: RoomIdQuery },
+    { 
+      body: UsernameBody, 
+      query: t.Object({ 
+        roomId: t.String(),
+        unload: t.Optional(t.String())
+      }) 
+    },
   )
 
   .get(
@@ -80,17 +134,24 @@ const messages = new Elysia({ prefix: "/messages" })
         ...body,
       };
 
+      const meta = await redis.hgetall<{ createdAt: number; initialTtl: number }>(metaKey(roomId));
+      if (!meta || !meta.createdAt) {
+        return { error: "Room expired" };
+      }
+
+      const absoluteRemaining = Math.max(0, Math.floor((meta.createdAt + meta.initialTtl * 1000 - Date.now()) / 1000));
+      if (absoluteRemaining <= 0) {
+        return { error: "Room expired" };
+      }
+
       await redis.rpush(msgKey(roomId), { ...message, token });
       await realtime.channel(roomId).emit("chat.message", message);
 
-      const remaining = await redis.ttl(metaKey(roomId));
-      if (remaining > 0) {
-        await Promise.all([
-          redis.expire(msgKey(roomId), remaining),
-          redis.expire(metaKey(roomId), remaining),
-          redis.expire(roomId, remaining),
-        ]);
-      }
+      await Promise.all([
+        redis.expire(msgKey(roomId), absoluteRemaining),
+        redis.expire(metaKey(roomId), absoluteRemaining),
+        redis.expire(roomId, absoluteRemaining),
+      ]);
       return { id: message.id };
     },
     {

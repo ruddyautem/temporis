@@ -55,7 +55,7 @@ export default function JoinPage() {
     <JoinScreen
       username={username}
       roomId={roomId}
-      onJoin={() => router.push(`/room/${roomId}`)}
+      onJoin={() => router.push(`/room/${roomId}${window.location.hash}`)}
       onDecline={() => router.push("/")}
     />
   );

@@ -57,7 +57,7 @@ const RoomDurationPicker = ({
       {value ? (
         <div className='space-y-2'>
           <p className='text-center text-[10px] sm:text-[11px] md:text-xs text-slate-500'>
-            La room s'autodétruira{" "}
+            La room s&apos;autodétruira{" "}
             <span className='text-emerald-400/80 font-medium'>
               {value} minutes
             </span>{" "}
@@ -65,7 +65,7 @@ const RoomDurationPicker = ({
           </p>
           <div className='flex items-center justify-center gap-2 text-[9px] sm:text-[10px] md:text-[11px] text-slate-600'>
             <Icon name='trash' />
-            <span>Aucun historique n'est conservé</span>
+            <span>Aucun historique n&apos;est conservé</span>
           </div>
         </div>
       ) : (

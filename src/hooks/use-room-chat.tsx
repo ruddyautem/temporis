@@ -12,6 +12,7 @@ export const useRoomChat = (
   username: string | undefined,
   handleExit: (reason: RoomExitReason) => void,
   otherUsersCountRef: MutableRefObject<number>,
+  cryptoKey: CryptoKey | null
 ) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [systemEvents, setSystemEvents] = useState<ChatMessage[]>([]);
@@ -24,20 +25,25 @@ export const useRoomChat = (
         handleExit(res.status === 403 ? "full" : "error");
         return null;
       }
+      
+      if (!cryptoKey) return { messages: [] };
+
       const decrypted = await Promise.all(
         res.data.messages.map(async (msg) => ({
           ...msg,
-          clearText: await decryptText(msg.text),
+          clearText: await decryptText(msg.text, cryptoKey),
         })),
       );
       return { messages: decrypted };
     },
     retry: false,
+    enabled: !!cryptoKey,
   });
 
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: async ({ text }: { text: string }) => {
-      const encrypted = await encryptText(text);
+      if (!cryptoKey) throw new Error("No encryption key");
+      const encrypted = await encryptText(text, cryptoKey);
       await client.messages.post(
         { sender: username || "Anonyme", text: encrypted },
         { query: { roomId } },
@@ -45,6 +51,8 @@ export const useRoomChat = (
       inputRef.current?.focus();
     },
   });
+
+  const activeUsersRef = useRef<Set<string>>(new Set());
 
   useRealtime({
     channels: [roomId],
@@ -57,7 +65,10 @@ export const useRoomChat = (
         if (data.username === username) return;
 
         if (event === "chat.join") {
-          otherUsersCountRef.current += 1;
+          if (activeUsersRef.current.has(data.username)) return;
+          activeUsersRef.current.add(data.username);
+          otherUsersCountRef.current = activeUsersRef.current.size;
+
           toast.info(
             <span>
               <span className='text-emerald-400 font-bold'>
@@ -84,10 +95,9 @@ export const useRoomChat = (
         }
 
         if (event === "chat.leave") {
-          otherUsersCountRef.current = Math.max(
-            0,
-            otherUsersCountRef.current - 1,
-          );
+          activeUsersRef.current.delete(data.username);
+          otherUsersCountRef.current = activeUsersRef.current.size;
+
           toast.error(
             <span>
               <span className='text-red-500 font-bold'>{data.username}</span> A

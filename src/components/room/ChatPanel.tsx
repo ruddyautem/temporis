@@ -39,7 +39,7 @@ const MessageBubble = ({ msg, isOwn }: { msg: ChatMessage; isOwn: boolean }) => 
           </span>
           <span className='text-slate-400'>{format(msg.timestamp, "HH:mm")}</span>
         </div>
-        <p className='whitespace-pre-wrap wrap-break-word text-[13px] md:text-[14px] text-slate-200 leading-relaxed'>
+        <p className='whitespace-pre-wrap break-words text-[13px] md:text-[14px] text-slate-200 leading-relaxed'>
           {msg.clearText}
         </p>
       </div>

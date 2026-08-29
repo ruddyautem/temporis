@@ -19,7 +19,30 @@ const Page = () => {
   const roomId = params.roomId as string;
 
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+  const [cryptoKey, setCryptoKey] = useState<CryptoKey | null>(null);
+  const [keyError, setKeyError] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const extractKey = async () => {
+      // Next.js router.push might take a tick to update window.location natively
+      await new Promise(resolve => setTimeout(resolve, 50));
+      try {
+        const hash = window.location.hash.slice(1);
+        const params = new URLSearchParams(hash);
+        const keyBase64 = params.get("key");
+        if (!keyBase64) throw new Error("No key in URL");
+
+        const { importKeyFromBase64 } = await import("@/lib/crypto");
+        const key = await importKeyFromBase64(keyBase64);
+        setCryptoKey(key);
+      } catch (err) {
+        console.error(err);
+        setKeyError(true);
+      }
+    };
+    extractKey();
+  }, []);
 
   const {
     otherUsersCountRef,
@@ -34,7 +57,7 @@ const Page = () => {
   const secondsRemaining = useRoomCountdown(roomId, handleExit);
 
   const { isLoading, displayMessages, sendMessage, isSending, inputRef } =
-    useRoomChat(roomId, username, handleExit, otherUsersCountRef);
+    useRoomChat(roomId, username, handleExit, otherUsersCountRef, cryptoKey);
 
   const {
     mainRef,
@@ -45,7 +68,7 @@ const Page = () => {
   } = useChatViewport(displayMessages);
 
   const copyInviteLink = () => {
-    const joinUrl = `${window.location.origin}/join/${roomId}`;
+    const joinUrl = `${window.location.origin}/join/${roomId}${window.location.hash}`;
     navigator.clipboard.writeText(joinUrl);
     if (!toast.isActive("copy-toast")) {
       toast.success("LIEN DE SESSION COPIÉ", {
@@ -57,6 +80,24 @@ const Page = () => {
 
   return (
     <>
+      {keyError && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+          <div className="bg-[#0a1118] border border-red-500/30 p-6 md:p-8 rounded-2xl max-w-md w-full text-center shadow-2xl">
+            <span className="text-red-500 text-4xl mb-4 block">🔒</span>
+            <h2 className="text-red-400 font-bold uppercase tracking-widest mb-3 text-sm md:text-base">Clé de Déchiffrement Manquante</h2>
+            <p className="text-slate-400 text-xs md:text-sm mb-6 leading-relaxed">
+              Impossible d&apos;accéder à la conversation. Le lien que vous avez utilisé ne contient pas la clé de déchiffrement sécurisée.
+            </p>
+            <button
+              onClick={() => window.location.href = "/"}
+              className="px-6 py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl text-xs uppercase tracking-widest font-bold hover:bg-red-500/20 transition-colors w-full"
+            >
+              Retour à l&apos;accueil
+            </button>
+          </div>
+        </div>
+      )}
+
       {showLeaveModal && (
         <LeaveConfirmDialog
           onConfirm={() => {

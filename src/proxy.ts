@@ -11,7 +11,7 @@ export const proxy = async (req: NextRequest) => {
   const roomId = roomMatch[1];
 
   const metaKey = `meta:${roomId}`;
-  const meta = await redis.hgetall<{ connected: string[]; createdAt: number }>(
+  const meta = await redis.hgetall<{ connected: string[]; createdAt: number; initialTtl: number }>(
     metaKey,
   );
 
@@ -19,9 +19,15 @@ export const proxy = async (req: NextRequest) => {
     return NextResponse.redirect(new URL("/?error=room-not-found", req.url));
 
   const existingToken = req.cookies.get("x-auth-token")?.value;
+  const isCurrentlyConnected = existingToken && meta.connected.includes(existingToken);
 
   // USER IS ALLOWED TO JOIN ROOM
-  if (existingToken && meta.connected.includes(existingToken)) {
+  if (isCurrentlyConnected) {
+    // Re-apply the absolute TTL
+    const absoluteRemaining = Math.max(0, Math.floor((meta.createdAt + meta.initialTtl * 1000 - Date.now()) / 1000));
+    if (absoluteRemaining > 0) {
+      await redis.expire(metaKey, absoluteRemaining);
+    }
     return NextResponse.next();
   }
 
@@ -42,13 +48,17 @@ export const proxy = async (req: NextRequest) => {
 
   // Get remaining TTL BEFORE updating
   const remaining = await redis.ttl(metaKey);
+  if (remaining <= 0) {
+    return NextResponse.redirect(new URL("/?error=room-not-found", req.url));
+  }
 
   // Update connected list
   await redis.hset(metaKey, { connected: [...meta.connected, token] });
 
-  // Re-apply the TTL (critical!)
-  if (remaining > 0) {
-    await redis.expire(metaKey, remaining);
+  // Re-apply the absolute TTL (recovering from a possible 10s grace period)
+  const absoluteRemaining = Math.max(0, Math.floor((meta.createdAt + meta.initialTtl * 1000 - Date.now()) / 1000));
+  if (absoluteRemaining > 0) {
+    await redis.expire(metaKey, absoluteRemaining);
   }
 
   return response;
