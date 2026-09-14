@@ -175,11 +175,11 @@ export default function Lobby() {
 
               <div className='rounded-none border border-emerald-500/25 bg-[#0b1420]/80 p-4 space-y-4'>
                 <div className='relative flex items-center h-8'>
-                  <div className='absolute left-[11px] right-[11px] h-1.5 bg-slate-800 border border-slate-700/60 pointer-events-none' />
+                  <div className='absolute left-2.5 right-2.5 h-1.5 bg-slate-800 border border-slate-700/60 pointer-events-none' />
                   <div
-                    className='absolute left-[11px] h-1.5 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] pointer-events-none transition-all duration-150'
+                    className='absolute left-2.5 h-1.5 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] pointer-events-none transition-all duration-150'
                     style={{
-                      width: `calc(${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 100}% - ${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 22}px)`,
+                      width: `calc(${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 100}% - ${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 20}px)`,
                     }}
                   />
                   <div className='absolute inset-x-0 flex justify-between items-center z-30 pointer-events-none'>
@@ -191,10 +191,10 @@ export default function Lobby() {
                           type='button'
                           onClick={() => setTtl(minutes)}
                           title={`${minutes} ${t("minutes")}`}
-                          className={`w-[22px] h-[22px] rounded-none transition-all duration-150 cursor-pointer pointer-events-auto p-0 flex items-center justify-center ${
+                          className={`w-5 h-5 rounded-none transition-colors duration-150 cursor-pointer pointer-events-auto p-0 flex items-center justify-center ${
                             isReached
-                              ? "bg-emerald-500 border-2 border-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.7)]"
-                              : "bg-slate-800/90 border border-slate-700/60 shadow-inner hover:border-slate-500"
+                              ? "bg-emerald-400 border-2 border-white"
+                              : "bg-slate-800 border border-slate-600 hover:border-emerald-400"
                           }`}
                         />
                       );
@@ -256,12 +256,12 @@ export default function Lobby() {
                   <Icon name='shield' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5' />
                 </div>
                 <div>
-                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>Protocole</div>
-                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>E2EE AES-GCM</div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>{t("cardProtoTitle")}</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>{t("cardProtoBadge")}</div>
                 </div>
               </div>
               <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
-                Clés dérivées localement dans votre navigateur. Le serveur ne lit jamais vos échanges.
+                {t("cardProtoDesc")}
               </p>
             </div>
 
@@ -273,12 +273,12 @@ export default function Lobby() {
                   <Icon name='trash' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5 text-red-400' />
                 </div>
                 <div>
-                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-red-400/80'>Persistance</div>
-                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>Zéro Trace</div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-red-400/80'>{t("cardStorageTitle")}</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>{t("cardStorageBadge")}</div>
                 </div>
               </div>
               <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
-                {t("roomInfoNoHistory")} Données volatiles en mémoire vive sans stockage.
+                {t("cardStorageDesc")}
               </p>
             </div>
 
@@ -290,14 +290,14 @@ export default function Lobby() {
                   <Icon name='clock' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5' />
                 </div>
                 <div>
-                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>Délai de vie</div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>{t("cardTtlTitle")}</div>
                   <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-emerald-300 uppercase tracking-wider tabular-nums'>
-                    {ttl} Minutes chrono
+                    {t("cardTtlBadge", { ttl })}
                   </div>
                 </div>
               </div>
               <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
-                {t("roomInfoAutoDelete", { ttl })}
+                {t("cardTtlDesc")}
               </p>
             </div>
           </div>
@@ -306,20 +306,20 @@ export default function Lobby() {
           <div className='lobby-configurator relative border border-emerald-500/25 bg-emerald-950/15 p-4 md:p-6 lg:p-5 2xl:p-8 space-y-4 md:space-y-5 2xl:space-y-6'>
             {/* Top Bar of the Configurator */}
             <div className='flex items-center justify-between border-b border-emerald-500/20 pb-2.5 md:pb-3.5 2xl:pb-4'>
-              <div className='flex items-center gap-2.5'>
-                <span className='h-2 w-2 bg-emerald-400' />
-                <div>
+              <div>
+                <div className='flex items-center gap-2'>
+                  <span className='h-2 w-2 shrink-0 bg-emerald-400' />
                   <h3 className='text-xs md:text-sm 2xl:text-base font-bold uppercase tracking-[0.2em] text-emerald-400'>
                     {t("ttlHeader")}
                   </h3>
-                  <p className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase tracking-widest text-slate-400'>
-                    Choisissez le cycle de vie avant autodestruction complète
-                  </p>
                 </div>
+                <p className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase tracking-widest text-slate-400 mt-1 pl-4'>
+                  {t("ttlSub")}
+                </p>
               </div>
 
               <div className='flex items-center gap-2 px-3 py-1 md:py-1.5 2xl:px-4 2xl:py-2 border border-emerald-500/25 bg-[#070e17]'>
-                <span className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase tracking-widest text-emerald-400/80 font-bold'>DURÉE SÉLECTIONNÉE :</span>
+                <span className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase tracking-widest text-emerald-400/80 font-bold'>{t("selectedDuration")}</span>
                 <span className='text-base md:text-lg 2xl:text-xl font-black text-emerald-300 font-mono tabular-nums'>{ttl}</span>
                 <span className='text-[10px] md:text-[11px] 2xl:text-xs uppercase text-emerald-400/80 font-bold'>MIN</span>
               </div>
@@ -358,9 +358,9 @@ export default function Lobby() {
                     </div>
 
                     <div className='text-[9.5px] md:text-[10.5px] 2xl:text-xs text-slate-400 font-mono tracking-wide leading-tight'>
-                      {minutes === 5 && "Éphémère express · Discussion flash"}
-                      {minutes === 15 && "Session standard · Équilibre optimal"}
-                      {minutes === 30 && "Session étendue · Échanges approfondis"}
+                      {minutes === 5 && t("quickDesc5")}
+                      {minutes === 15 && t("quickDesc15")}
+                      {minutes === 30 && t("quickDesc30")}
                     </div>
                   </button>
                 );
@@ -388,9 +388,9 @@ export default function Lobby() {
                         type='button'
                         onClick={() => setTtl(minutes)}
                         title={`${minutes} ${t("minutes")}`}
-                        className={`w-5 h-5 2xl:w-6 2xl:h-6 rounded-none transition-all duration-150 cursor-pointer pointer-events-auto p-0 flex items-center justify-center ${
+                        className={`w-5 h-5 rounded-none transition-colors duration-150 cursor-pointer pointer-events-auto p-0 flex items-center justify-center ${
                           isReached
-                            ? "bg-emerald-400 border-2 border-white scale-105"
+                            ? "bg-emerald-400 border-2 border-white"
                             : "bg-slate-800 border border-slate-600 hover:border-emerald-400"
                         }`}
                       />
@@ -418,7 +418,7 @@ export default function Lobby() {
             <div className='pt-2.5 md:pt-3.5 2xl:pt-4 border-t border-emerald-500/20 flex items-center justify-between gap-4 2xl:gap-6'>
               <div className='flex items-center gap-2 text-xs text-slate-400 font-mono'>
                 <div className='w-1.5 h-1.5 rounded-none bg-emerald-400' />
-                <span className='text-[10px] md:text-[11px] 2xl:text-xs'>Prêt à déployer un salon chiffré unique sans trace serveur</span>
+                <span className='text-[10px] md:text-[11px] 2xl:text-xs'>{t("readyToDeploy")}</span>
               </div>
 
               <button

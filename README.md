@@ -21,10 +21,10 @@ Bienvenue sur le code source de **Temporis**. Une application de messagerie vér
 | **Chiffrement E2EE** | L'API Web Crypto (`AES-GCM` 256-bit) chiffre et déchiffre les messages côté client. Le serveur ne relaie que des paquets illisibles. |
 | **Secret Absolu** | La clé AES est générée dans le navigateur et transmise via le fragment d'URL (`#key=...`). Elle n'est **jamais** envoyée au serveur. |
 | **Temps Réel** | WebSockets alimentés par Upstash Realtime pour une latence minimale. |
-| **Autodestruction & TTL** | Chaque salon dispose d'un compte à rebours strict (5, 15 ou 30 min) matérialisé par une jauge laser. À expiration, toutes les données sont purgées de Redis. |
+| **Autodestruction & TTL** | Chaque room dispose d'un compte à rebours strict (5, 15 ou 30 min) matérialisé par une jauge laser. À expiration, toutes les données sont purgées de Redis. |
 | **Sélecteur de durée tactile** | Sélecteur de temps ergonomique sous forme de curseur tactile avec paliers visuels tactiques (5, 15 et 30 min), segments cliquables et remplissage dynamique. |
 | **Période de grâce de 10s** | Lorsqu'un utilisateur ferme son onglet ou actualise sa page (F5), un délai de grâce de 10 secondes est accordé. S'il ne revient pas, son départ est notifié et sa place est automatiquement libérée dans Redis. |
-| **Fermeture intelligente** | Si les 2 participants quittent le salon ou cliquent sur "Détruire", le salon et ses messages sont **immédiatement effacés**. |
+| **Fermeture intelligente** | Si les 2 participants quittent la room ou cliquent sur "Détruire", la room et ses messages sont **immédiatement effacés**. |
 | **Notifications Sonner empilées** | Système de notifications toasts unifié et typé qui se superpose élégamment en pile en cas d'événements multiples. |
 | **Internationalisation complète** | Support bilingue Français / Anglais avec sélecteur de langue dynamique (`next-intl`), rendu avec de vrais drapeaux vectoriels SVG (compatibilité totale Chrome Windows/Linux/macOS/mobile). |
 | **Responsive Design Cyberpunk** | Interface sombre cyberpunk soignée, optimisée pour mobile et desktop, avec footer compact ajusté directement sous les conteneurs. |
@@ -35,7 +35,7 @@ L'architecture technique est conçue pour garantir une confidentialité maximale
 
 - **AES-256-GCM** : Clé symétrique générée via `crypto.subtle.generateKey` et sérialisée en Base64URL sécurisé dans l'ancre d'URL (`#key=...`).
 - **IV Aléatoire unique** : Chaque message génère un vecteur d'initialisation (12 octets) aléatoire distinct.
-- **Contrôle d'accès strict** : Le middleware backend (`proxy.ts` et Elysia `authMiddleware`) distribue des jetons sous forme de cookies HttpOnly `SameSite=Strict` limitant l'accès au salon strictement à 2 personnes simultanées.
+- **Contrôle d'accès strict** : Le middleware backend (`proxy.ts` et Elysia `authMiddleware`) distribue des jetons sous forme de cookies HttpOnly `SameSite=Strict` limitant l'accès à la room strictement à 2 personnes simultanées.
 - **Zéro fuite de données** : Les messages en clair ne sont jamais enregistrés en base ni loggés sur le serveur.
 
 ### 🛠 Stack technique
@@ -60,7 +60,7 @@ L'architecture technique est conçue pour garantir une confidentialité maximale
 Temporis/
 ├── src/
 │   ├── app/
-│   │   ├── (lobby)/                 # Page d'accueil (création de salon & join)
+│   │   ├── (lobby)/                 # Page d'accueil (création de room & join)
 │   │   │   ├── join/[roomId]/       # Écran d'invitation pour le 2ème participant
 │   │   │   ├── layout.tsx           # Layout lobby avec header et footer adaptatif
 │   │   │   └── page.tsx             # Configuration de la room
@@ -69,10 +69,10 @@ Temporis/
 │   │   │   └── [[...slugs]]/        # Routes de l'API Elysia
 │   │   │       ├── auth.ts          # Middleware de sécurité (cookies, vérification token)
 │   │   │       └── route.ts         # Endpoints (create, join, leave avec lock 10s, messages)
-│   │   └── room/[roomId]/           # Salon de chat chiffré E2EE
+│   │   └── room/[roomId]/           # Chat de la room, chiffré E2EE
 │   ├── components/                  # Composants UI
 │   │   ├── common/                  # UI partagée (BrandMark, LanguageSwitcher avec SVG, Fond)
-│   │   ├── lobby/                   # Configuration du salon (slider de durée, statut)
+│   │   ├── lobby/                   # Configuration de la room (slider de durée, statut)
 │   │   ├── room/                    # Header (Partager, Détruire), panneau de chat, input
 │   │   ├── Footer.tsx               # Footer responsive et compact
 │   │   └── ToastProvider.tsx        # Configuration des toasts Sonner empilables
@@ -85,7 +85,7 @@ Temporis/
 │   │   ├── crypto.ts                # Wrapper Web Crypto API AES-GCM
 │   │   ├── redis.ts                 # Client Upstash Redis
 │   │   ├── realtime.ts              # Client Upstash Realtime
-│   │   ├── room-config.ts           # Constantes et durées de salon
+│   │   ├── room-config.ts           # Constantes et durées de room
 │   │   └── client.ts                # Client Eden (Elysia) typé de bout en bout
 │   └── proxy.ts                     # Middleware Next.js : Contrôle d'accès & redirection
 ├── messages/                        # Dictionnaires de traduction (fr.json, en.json)

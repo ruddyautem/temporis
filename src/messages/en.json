@@ -1,7 +1,7 @@
 {
   "Common": {
     "title": "TEMPORIS",
-    "subtitle": "Ephemeral messages · End-to-end encrypted · Zero trace",
+    "subtitle": "Ephemeral messages · End-to-end encryption · Zero History",
     "badge": "End-to-end encryption",
     "identity": "Anonymous identity",
     "reroll": "Change",
@@ -10,11 +10,11 @@
   },
   "Lobby": {
     "ttlHeader": "ROOM DURATION",
-    "ttlSub": "Self-destruct",
+    "ttlSub": "Choose how long until automatic deletion",
     "minutes": "Minutes",
     "roomInfo": "The room and all its messages will be automatically deleted after {ttl} minutes. No logs or history are kept.",
-    "roomInfoAutoDelete": "Room and messages auto-deleted after {ttl} minutes.",
-    "roomInfoNoHistory": "No logs or history are kept.",
+    "roomInfoAutoDelete": "Auto-deleted after {ttl} minutes.",
+    "roomInfoNoHistory": "No history or traces kept.",
     "createButton": "Create room",
     "desktopCreateButton": "Create secure room",
     "creating": "Creating room...",
@@ -22,7 +22,21 @@
     "toastNotFound": "Room not found or already expired",
     "toastFull": "This room has reached maximum capacity",
     "toastRoomCreated": "Secure room ready!",
-    "toastCreationError": "Could not create room right now."
+    "toastCreationError": "Could not create room right now.",
+    "selectedDuration": "SELECTED DURATION:",
+    "quickDesc5": "Quick chat · 5 minutes",
+    "quickDesc15": "Recommended duration · 15 minutes",
+    "quickDesc30": "Extended chat · 30 minutes",
+    "cardProtoTitle": "SECURITY",
+    "cardProtoBadge": "END-TO-END ENCRYPTION",
+    "cardProtoDesc": "Your messages are encrypted directly in your browser. The server can never read them.",
+    "cardStorageTitle": "PRIVACY",
+    "cardStorageBadge": "ZERO HISTORY",
+    "cardStorageDesc": "Nothing is recorded. Messages vanish as soon as the room closes or expires.",
+    "cardTtlTitle": "LIFECYCLE",
+    "cardTtlBadge": "{ttl} MINUTES TIMER",
+    "cardTtlDesc": "The room and all its contents vanish automatically once the timer expires.",
+    "readyToDeploy": "Ready to launch a secure, temporary private room"
   },
   "Status": {
     "destroyed": "This room has been destroyed.",
@@ -38,7 +52,20 @@
     "backHome": "Back to home",
     "identityRequired": "Identity required",
     "identityRequiredText": "You need to generate an anonymous identity before joining this session.",
-    "createIdentity": "Create my identity"
+    "createIdentity": "Create my identity",
+    "settingsTitle": "PRIVATE ROOM SETTINGS",
+    "unlockedBadge": "INVITATION UNLOCKED",
+    "roomIdentifier": "ROOM IDENTIFIER",
+    "accessReady": "ACCESS READY",
+    "cardSecurityTitle": "SECURITY",
+    "cardSecurityBadge": "CHANNEL ACTIVE",
+    "cardSecurityDesc": "End-to-end encryption enabled. Your messages are unlocked locally in your browser.",
+    "cardLifeTitle": "LIFECYCLE",
+    "cardLifeBadge": "AUTOMATIC DELETION",
+    "cardLifeDesc": "As soon as the host leaves or the countdown expires, everything is permanently erased.",
+    "cardTraceTitle": "PRIVACY",
+    "cardTraceBadge": "ZERO HISTORY",
+    "cardTraceDesc": "Nothing is recorded. All messages disappear without leaving a trace."
   },
   "Room": {
     "selfDestruct": "Self-destruct",
@@ -73,6 +100,6 @@
     "channelStatusEndingSoon": "EXPIRATION SOON // {time}",
     "channelStatusActive": "CHANNEL ACTIVE // {time}",
     "emptyStateTitle": "SECURE CHANNEL ACTIVE",
-    "emptyStateSub": "END-TO-END ENCRYPTED · ZERO LOGS · EPHEMERAL"
+    "emptyStateSub": "END-TO-END ENCRYPTION · ZERO HISTORY · EPHEMERAL"
   }
 }

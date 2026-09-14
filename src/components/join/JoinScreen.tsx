@@ -125,7 +125,7 @@ const JoinScreen = ({
                   {t("sessionLabel")}
                 </span>
                 <span className='text-[10px] text-emerald-400/90 font-semibold tracking-wider font-mono'>
-                  CANAL SÉCURISÉ
+                  ROOM SÉCURISÉE
                 </span>
               </div>
 
@@ -153,12 +153,12 @@ const JoinScreen = ({
                   <Icon name='shield' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5' />
                 </div>
                 <div>
-                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>Statut</div>
-                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>Canal Actif</div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>{t("cardSecurityTitle")}</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>{t("cardSecurityBadge")}</div>
                 </div>
               </div>
               <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
-                Chiffrement de bout en bout actif. La clé d'accès déverrouille le canal en local.
+                {t("cardSecurityDesc")}
               </p>
             </div>
 
@@ -170,12 +170,12 @@ const JoinScreen = ({
                   <Icon name='clock' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5' />
                 </div>
                 <div>
-                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>Cycle de vie</div>
-                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-emerald-300 uppercase tracking-wider'>Autodestruction</div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>{t("cardLifeTitle")}</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-emerald-300 uppercase tracking-wider'>{t("cardLifeBadge")}</div>
                 </div>
               </div>
               <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
-                Dès expiration du délai ou fermeture du créateur, toutes les données disparaissent.
+                {t("cardLifeDesc")}
               </p>
             </div>
 
@@ -187,12 +187,12 @@ const JoinScreen = ({
                   <Icon name='trash' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5 text-red-400' />
                 </div>
                 <div>
-                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-red-400/80'>Persistance</div>
-                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>Zéro Trace</div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-red-400/80'>{t("cardTraceTitle")}</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>{t("cardTraceBadge")}</div>
                 </div>
               </div>
               <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
-                {tLobby("roomInfoNoHistory")} Aucune sauvegarde disque.
+                {t("cardTraceDesc")}
               </p>
             </div>
           </div>
@@ -200,21 +200,21 @@ const JoinScreen = ({
           {/* Central Join Station */}
           <div className='lobby-configurator relative border border-emerald-500/25 bg-emerald-950/15 p-4 md:p-6 lg:p-5 2xl:p-8 space-y-4 md:space-y-5 2xl:space-y-6'>
             <div className='flex items-center justify-between border-b border-emerald-500/20 pb-2.5 md:pb-3.5 2xl:pb-4'>
-              <div className='flex items-center gap-2.5'>
-                <span className='h-2 w-2 bg-emerald-400' />
-                <div>
+              <div>
+                <div className='flex items-center gap-2'>
+                  <span className='h-2 w-2 shrink-0 bg-emerald-400' />
                   <h3 className='text-xs md:text-sm 2xl:text-base font-bold uppercase tracking-[0.2em] text-emerald-400'>
-                    PARAMÈTRES DU CANAL PRIVÉ
+                    {t("settingsTitle")}
                   </h3>
-                  <p className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase tracking-widest text-slate-400'>
-                    {t("invitedSubtitle")}
-                  </p>
                 </div>
+                <p className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase tracking-widest text-slate-400 mt-1 pl-4'>
+                  {t("invitedSubtitle")}
+                </p>
               </div>
 
               <div className='flex items-center gap-2 px-3 py-1 md:py-1.5 2xl:px-4 2xl:py-2 border border-emerald-500/25 bg-[#070e17] text-emerald-300 text-[10.5px] 2xl:text-xs font-mono font-bold tracking-wider'>
                 <span className='w-1.5 h-1.5 bg-emerald-400' />
-                INVITATION DÉVERROUILLÉE
+                {t("unlockedBadge")}
               </div>
             </div>
 
@@ -222,7 +222,7 @@ const JoinScreen = ({
             <div className='p-3.5 md:p-4 2xl:p-6 border border-emerald-500/25 bg-[#09111c] flex items-center justify-between'>
               <div className='space-y-1'>
                 <div className='text-[9px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>
-                  IDENTIFIANT UNIQUE DE SALON
+                  {t("roomIdentifier")}
                 </div>
                 <div className='text-base md:text-lg 2xl:text-2xl font-black font-mono tracking-[0.2em] text-white flex items-center gap-3'>
                   <span>{roomId}</span>
@@ -231,7 +231,7 @@ const JoinScreen = ({
 
               <div className='flex items-center gap-2 px-3 py-1.5 2xl:px-4 2xl:py-2 border border-emerald-500/20 bg-emerald-950/40 text-emerald-300 text-[11px] 2xl:text-xs font-mono font-bold'>
                 <Icon name='lock' className='h-3.5 w-3.5 2xl:h-4 2xl:w-4 text-emerald-400' />
-                <span>ACCÈS PRÊT</span>
+                <span>{t("accessReady")}</span>
               </div>
             </div>
 

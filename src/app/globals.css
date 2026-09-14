@@ -168,41 +168,21 @@ body {
 .temporis-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
-  background: #10b981;
-  border: 2px solid #34d399;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7), inset 0 0 4px rgba(0, 0, 0, 0.4);
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-}
-
-.temporis-slider::-webkit-slider-thumb:hover {
-  background: #34d399;
-  box-shadow: 0 0 18px rgba(52, 211, 153, 0.95);
-  transform: scale(1.12);
-}
-
-.temporis-slider::-webkit-slider-thumb:active {
-  transform: scale(0.96);
-  background: #059669;
 }
 
 .temporis-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  border-radius: 0px;
-  background: #10b981;
-  border: 2px solid #34d399;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7);
+  background: transparent;
+  border: none;
+  box-shadow: none;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.temporis-slider::-moz-range-thumb:hover {
-  background: #34d399;
-  box-shadow: 0 0 18px rgba(52, 211, 153, 0.95);
-  transform: scale(1.12);
 }
 
 /* Custom Tactical Scrollbar */
