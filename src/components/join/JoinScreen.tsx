@@ -33,7 +33,7 @@ const JoinScreen = ({
   };
 
   return (
-    <div className='flex flex-col flex-1 w-full font-mono gap-3 sm:gap-6 min-h-0'>
+    <div className='flex flex-col flex-1 sm:flex-initial w-full font-mono gap-3 sm:gap-6 min-h-0 sm:min-h-fit'>
       {/* Brand Header with invitation badge */}
       <BrandMark
         badge={
@@ -51,7 +51,7 @@ const JoinScreen = ({
       />
 
       {/* Cyberpunk Card matching Lobby exactly */}
-      <div className='border border-emerald-500/25 bg-[#0c1522]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative rounded-none overflow-hidden flex flex-col flex-1 min-h-0'>
+      <div className='border border-emerald-500/25 bg-[#0c1522]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative rounded-none overflow-hidden flex flex-col flex-1 sm:flex-initial min-h-0 sm:min-h-fit'>
         {/* Tactical Corner Accents */}
         <div className='absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-emerald-400/80 z-10' />
         <div className='absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-emerald-400/80 z-10' />
@@ -59,16 +59,16 @@ const JoinScreen = ({
         <div className='absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-emerald-400/80 z-10' />
 
         {/* Anonymous Identity Header */}
-        <div className='flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-3 sm:py-4 sm:px-6 shrink-0'>
-          <div className='flex items-center gap-3 min-w-0'>
-            <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-none border border-emerald-500/30 bg-emerald-500/10 text-emerald-400'>
-              <Icon name='user' className='h-4 w-4' />
+        <div className='flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-3 sm:py-3.5 2xl:py-5 sm:px-6 2xl:px-8 shrink-0'>
+          <div className='flex items-center gap-3 sm:gap-3.5 min-w-0'>
+            <div className='flex h-8 w-8 sm:h-8 sm:w-8 2xl:h-9 2xl:w-9 shrink-0 items-center justify-center rounded-none border border-emerald-500/30 bg-emerald-500/10 text-emerald-400'>
+              <Icon name='user' className='h-4 w-4 sm:h-4 sm:w-4 2xl:h-4.5 2xl:w-4.5' />
             </div>
             <div className='min-w-0'>
-              <div className='text-[10px] uppercase tracking-wider text-emerald-400/80 font-bold'>
+              <div className='text-[10px] sm:text-[10px] 2xl:text-[11px] uppercase tracking-wider text-emerald-400/80 font-bold'>
                 {tCommon("identity")}
               </div>
-              <div className='text-xs sm:text-sm font-bold text-slate-100 truncate tracking-wide'>
+              <div className='text-xs sm:text-sm 2xl:text-base font-bold text-slate-100 truncate tracking-wide'>
                 {username || tCommon("loading")}
               </div>
             </div>
@@ -79,11 +79,11 @@ const JoinScreen = ({
               type='button'
               onClick={handleRegenerate}
               title={tCommon("reroll")}
-              className='group flex items-center gap-1.5 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-400 active:scale-95 transition-all cursor-pointer'
+              className='group flex items-center gap-1.5 sm:gap-2 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 sm:px-3 sm:py-1.5 2xl:px-3.5 2xl:py-2 text-[11px] sm:text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-400 active:scale-95 transition-all cursor-pointer'
             >
               <Icon
                 name='refresh'
-                className={`h-3.5 w-3.5 transition-transform duration-300 ${
+                className={`h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 2xl:h-4 2xl:w-4 transition-transform duration-300 ${
                   isRegenerating ? "rotate-180 text-emerald-200" : "group-hover:rotate-45"
                 }`}
               />
@@ -92,76 +92,171 @@ const JoinScreen = ({
           )}
         </div>
 
-        {/* Content Area */}
-        <div className='p-4 sm:p-8 flex flex-col flex-1 justify-between gap-4 sm:gap-7 min-h-0 overflow-y-auto'>
-          {/* Main Encadré: cleanly wraps info on top and details at bottom */}
-          <div className='flex flex-col flex-1 justify-between sm:justify-start rounded-none border border-emerald-500/20 bg-emerald-950/15 p-3.5 sm:p-0 sm:border-0 sm:bg-transparent gap-4 sm:gap-7'>
-            {/* Info Container: single unified container on desktop, matching encadré on mobile */}
-            <div className='rounded-none sm:border sm:border-emerald-500/20 sm:bg-emerald-950/15 sm:p-4 space-y-2.5 sm:space-y-3.5'>
-              {/* Invitation / secure channel banner */}
-              <div className='flex items-center gap-3'>
-                <div className='flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-none bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'>
-                  <Icon name='lock' className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
+        {/* ========================================================================= */}
+        {/* MOBILE CONTENT AREA (sm:hidden) - STRICTLY KEPT INTACT AS APPROVED        */}
+        {/* ========================================================================= */}
+        <div className='sm:hidden p-4 flex flex-col flex-1 justify-between gap-4 min-h-0 overflow-y-auto'>
+          <div className='flex flex-col flex-1 justify-between rounded-none border border-emerald-500/20 bg-emerald-950/15 p-3.5 gap-4'>
+            {/* Info specifications */}
+            <div className='space-y-3'>
+              <div className='flex items-start gap-3'>
+                <div className='flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mt-0.5'>
+                  <Icon name='lock' className='h-3.5 w-3.5' />
                 </div>
-                <div className='text-xs text-slate-300 leading-snug flex items-center'>
-                  {t("invitedSubtitle")}
+                <div className='text-xs text-slate-300 leading-snug'>
+                  <span>{t("invitedSubtitle")}</span>
                 </div>
               </div>
 
-              {/* Divider on desktop */}
-              <div className='hidden sm:block h-px w-full bg-emerald-500/15' />
-
-              {/* Red trash icon with 'Aucun historique n'est conservé' */}
-              <div className='flex items-center gap-3'>
-                <div className='flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-none bg-red-500/10 text-red-400 border border-red-500/20'>
-                  <Icon name='trash' className='h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-400' />
+              <div className='flex items-start gap-3'>
+                <div className='flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-red-500/10 text-red-400 border border-red-500/20 mt-0.5'>
+                  <Icon name='trash' className='h-3.5 w-3.5 text-red-400' />
                 </div>
-                <div className='text-xs text-slate-300 leading-snug flex items-center'>
-                  {tLobby("roomInfoNoHistory")}
+                <div className='text-xs text-slate-300 leading-snug'>
+                  <span>{tLobby("roomInfoNoHistory")}</span>
                 </div>
               </div>
             </div>
 
-            {/* Session Room ID Box: cleanly placed under the info box */}
-            <div className='space-y-2.5 sm:space-y-3'>
+            {/* Session ID */}
+            <div className='space-y-2'>
               <div className='flex items-center justify-between text-xs'>
-                <span className='text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-slate-300'>
+                <span className='text-[10px] uppercase tracking-wider font-bold text-slate-300'>
                   {t("sessionLabel")}
                 </span>
-                <span className='text-[10px] sm:text-[11px] text-emerald-400/90 font-semibold tracking-wider font-mono'>
+                <span className='text-[10px] text-emerald-400/90 font-semibold tracking-wider font-mono'>
                   CANAL SÉCURISÉ
                 </span>
               </div>
 
-              <div className='flex items-center justify-between px-4 py-3 sm:py-3.5 rounded-none border border-emerald-500/30 bg-[#0a1420] text-emerald-200'>
-                <span className='font-mono text-xs sm:text-sm font-bold tracking-widest truncate'>
+              <div className='flex items-center justify-between px-4 py-3 rounded-none border border-emerald-500/30 bg-[#0a1420] text-emerald-200'>
+                <span className='font-mono text-xs font-bold tracking-widest truncate'>
                   {roomId}
                 </span>
                 <span className='h-2 w-2 rounded-none bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse' />
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Desktop Action Buttons: Join and Decline */}
-          <div className='hidden sm:flex gap-3 pt-2'>
-            <button
-              type='button'
-              onClick={onDecline}
-              className='py-3.5 px-5 rounded-none border border-slate-700/80 bg-[#0c1622] hover:bg-[#111e2e] text-slate-300 hover:text-white transition-all text-xs font-bold uppercase tracking-wider cursor-pointer'
-            >
-              {t("backHome")}
-            </button>
-            <button
-              type='button'
-              onClick={onJoin}
-              className='flex-1 flex items-center justify-center gap-2.5 rounded-none border border-emerald-500/60 bg-emerald-600/25 hover:bg-emerald-500/35 hover:border-emerald-400 text-emerald-100 py-3.5 text-xs md:text-sm font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(16,185,129,0.18)] transition-all active:scale-[0.99] cursor-pointer'
-            >
-              <span>{t("joinRoom")}</span>
-              <Icon
-                name='arrowRight'
-                className='h-4 w-4 text-emerald-300 stroke-[2.5]'
-              />
-            </button>
+        {/* ========================================================================= */}
+        {/* DESKTOP CONTENT AREA (hidden sm:flex) - GRAND CYBER COMMAND DECK          */}
+        {/* ========================================================================= */}
+        <div className='lobby-card-content hidden sm:flex flex-col p-4 md:p-6 lg:p-6 2xl:p-10 gap-3 md:gap-5 lg:gap-4 2xl:gap-8'>
+          {/* Top Interactive Row: 3 Tactical Status Cards */}
+          <div className='lobby-top-cards grid grid-cols-3 gap-3 md:gap-4 2xl:gap-6'>
+            {/* Card 1: Channel Security */}
+            <div className='lobby-top-card relative p-3 md:p-4 lg:p-3.5 2xl:p-6 border border-emerald-500/20 bg-[#09111c]/80 group hover:border-emerald-400/40 transition-all'>
+              <div className='absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-emerald-400' />
+              <div className='flex items-center gap-2.5 md:gap-3 2xl:gap-4 mb-1 md:mb-2 2xl:mb-3'>
+                <div className='flex h-7 w-7 md:h-8 md:w-8 2xl:h-10 2xl:w-10 shrink-0 items-center justify-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'>
+                  <Icon name='shield' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5' />
+                </div>
+                <div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>Statut</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>Canal Actif</div>
+                </div>
+              </div>
+              <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
+                Chiffrement de bout en bout actif. La clé d'accès déverrouille le canal en local.
+              </p>
+            </div>
+
+            {/* Card 2: Ephemeral Lifetime */}
+            <div className='lobby-top-card relative p-3 md:p-4 lg:p-3.5 2xl:p-6 border border-emerald-500/20 bg-[#09111c]/80 group hover:border-emerald-400/40 transition-all'>
+              <div className='absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-emerald-400' />
+              <div className='flex items-center gap-2.5 md:gap-3 2xl:gap-4 mb-1 md:mb-2 2xl:mb-3'>
+                <div className='flex h-7 w-7 md:h-8 md:w-8 2xl:h-10 2xl:w-10 shrink-0 items-center justify-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'>
+                  <Icon name='clock' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5' />
+                </div>
+                <div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>Cycle de vie</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-emerald-300 uppercase tracking-wider'>Autodestruction</div>
+                </div>
+              </div>
+              <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
+                Dès expiration du délai ou fermeture du créateur, toutes les données disparaissent.
+              </p>
+            </div>
+
+            {/* Card 3: Zero Trace */}
+            <div className='lobby-top-card relative p-3 md:p-4 lg:p-3.5 2xl:p-6 border border-emerald-500/20 bg-[#09111c]/80 group hover:border-emerald-400/40 transition-all'>
+              <div className='absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-emerald-400' />
+              <div className='flex items-center gap-2.5 md:gap-3 2xl:gap-4 mb-1 md:mb-2 2xl:mb-3'>
+                <div className='flex h-7 w-7 md:h-8 md:w-8 2xl:h-10 2xl:w-10 shrink-0 items-center justify-center bg-red-500/10 border border-red-500/20 text-red-400'>
+                  <Icon name='trash' className='h-3.5 w-3.5 md:h-4 md:w-4 2xl:h-5 2xl:w-5 text-red-400' />
+                </div>
+                <div>
+                  <div className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase font-bold tracking-widest text-red-400/80'>Persistance</div>
+                  <div className='text-[11px] md:text-xs 2xl:text-sm font-bold text-slate-100 uppercase tracking-wider'>Zéro Trace</div>
+                </div>
+              </div>
+              <p className='text-[10px] md:text-[11px] 2xl:text-xs text-slate-300/90 leading-snug 2xl:leading-relaxed'>
+                {tLobby("roomInfoNoHistory")} Aucune sauvegarde disque.
+              </p>
+            </div>
+          </div>
+
+          {/* Central Join Station */}
+          <div className='lobby-configurator relative border border-emerald-500/25 bg-emerald-950/15 p-4 md:p-6 lg:p-5 2xl:p-8 space-y-4 md:space-y-5 2xl:space-y-6'>
+            <div className='flex items-center justify-between border-b border-emerald-500/20 pb-2.5 md:pb-3.5 2xl:pb-4'>
+              <div className='flex items-center gap-2.5'>
+                <span className='h-2 w-2 bg-emerald-400' />
+                <div>
+                  <h3 className='text-xs md:text-sm 2xl:text-base font-bold uppercase tracking-[0.2em] text-emerald-400'>
+                    PARAMÈTRES DU CANAL PRIVÉ
+                  </h3>
+                  <p className='text-[9px] md:text-[9.5px] 2xl:text-xs uppercase tracking-widest text-slate-400'>
+                    {t("invitedSubtitle")}
+                  </p>
+                </div>
+              </div>
+
+              <div className='flex items-center gap-2 px-3 py-1 md:py-1.5 2xl:px-4 2xl:py-2 border border-emerald-500/25 bg-[#070e17] text-emerald-300 text-[10.5px] 2xl:text-xs font-mono font-bold tracking-wider'>
+                <span className='w-1.5 h-1.5 bg-emerald-400' />
+                INVITATION DÉVERROUILLÉE
+              </div>
+            </div>
+
+            {/* Large Room ID Display Banner */}
+            <div className='p-3.5 md:p-4 2xl:p-6 border border-emerald-500/25 bg-[#09111c] flex items-center justify-between'>
+              <div className='space-y-1'>
+                <div className='text-[9px] 2xl:text-xs uppercase font-bold tracking-widest text-emerald-400/80'>
+                  IDENTIFIANT UNIQUE DE SALON
+                </div>
+                <div className='text-base md:text-lg 2xl:text-2xl font-black font-mono tracking-[0.2em] text-white flex items-center gap-3'>
+                  <span>{roomId}</span>
+                </div>
+              </div>
+
+              <div className='flex items-center gap-2 px-3 py-1.5 2xl:px-4 2xl:py-2 border border-emerald-500/20 bg-emerald-950/40 text-emerald-300 text-[11px] 2xl:text-xs font-mono font-bold'>
+                <Icon name='lock' className='h-3.5 w-3.5 2xl:h-4 2xl:w-4 text-emerald-400' />
+                <span>ACCÈS PRÊT</span>
+              </div>
+            </div>
+
+            {/* Actions Bar */}
+            <div className='pt-2.5 md:pt-3.5 2xl:pt-4 border-t border-emerald-500/20 flex items-center justify-between gap-4 2xl:gap-6'>
+              <button
+                type='button'
+                onClick={onDecline}
+                className='lobby-cta-btn py-2.5 md:py-3.5 2xl:py-4 px-5 2xl:px-8 rounded-none border border-slate-700 bg-[#0c1622] hover:bg-[#111e2e] text-slate-300 hover:text-white transition-all text-xs 2xl:text-sm font-bold uppercase tracking-[0.15em] cursor-pointer'
+              >
+                {t("backHome")}
+              </button>
+
+              <button
+                type='button'
+                onClick={onJoin}
+                className='lobby-cta-btn flex-1 max-w-sm 2xl:max-w-md flex items-center justify-center gap-3 rounded-none border border-emerald-400 bg-emerald-600/25 hover:bg-emerald-500/35 active:bg-emerald-500/40 text-emerald-100 hover:text-white py-2.5 md:py-3.5 2xl:py-4 px-5 2xl:px-8 text-xs lg:text-sm 2xl:text-base font-bold uppercase tracking-[0.2em] transition-all active:scale-[0.99] cursor-pointer'
+              >
+                <span>{t("joinRoom")}</span>
+                <Icon
+                  name='arrowRight'
+                  className='h-4 w-4 2xl:h-5 2xl:w-5 text-emerald-300 stroke-[2.5]'
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>

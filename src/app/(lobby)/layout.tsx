@@ -7,12 +7,12 @@ import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function RoomEntryLayout({ children }: { children: ReactNode }) {
   return (
-    <main className='relative flex min-h-dvh flex-col bg-[#0b121b] text-slate-100 overflow-x-hidden selection:bg-emerald-500/20 font-mono'>
+    <main className='relative flex min-h-dvh sm:h-dvh sm:max-h-dvh flex-col bg-[#0b121b] text-slate-100 overflow-x-hidden sm:overflow-hidden selection:bg-emerald-500/20 font-mono'>
       <AppBackground variant='grid' />
 
       {/* Top Header Bar matching Chat RoomHeader style with high z-index so dropdown floats above everything */}
-      <header className='relative border-b border-emerald-500/20 px-3 py-2 sm:px-6 sm:py-3 shrink-0 bg-[#070e17]/95 backdrop-blur-xl z-50 font-mono'>
-        <div className='mx-auto flex items-center justify-between gap-2 relative max-w-5xl'>
+      <header className='relative border-b border-emerald-500/20 px-3 py-2 sm:px-6 sm:py-2.5 shrink-0 bg-[#070e17]/95 backdrop-blur-xl z-50 font-mono'>
+        <div className='mx-auto flex items-center justify-between gap-2 relative max-w-6xl'>
           {/* Left: Temporis Logo / Brand with favicon svg */}
           <Link
             href='/'
@@ -23,7 +23,7 @@ export default function RoomEntryLayout({ children }: { children: ReactNode }) {
               alt='Temporis'
               width={20}
               height={20}
-              className='h-5 w-5 drop-shadow-[0_0_8px_rgba(0,212,146,0.6)]'
+              className='h-5 w-5 drop-shadow-[0_0_6px_rgba(0,212,146,0.5)]'
               priority
             />
             <span className='font-bold text-white tracking-widest uppercase text-xs sm:text-sm'>
@@ -35,21 +35,21 @@ export default function RoomEntryLayout({ children }: { children: ReactNode }) {
           <div className='flex items-center z-50'>
             <LanguageSwitcher
               showFullText={true}
-              buttonClassName='flex items-center justify-center gap-1.5 px-3 py-1.5 border border-emerald-500/30 bg-[#0c1624] text-slate-200 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all cursor-pointer h-[34px] shadow-sm'
+              buttonClassName='flex items-center justify-center gap-1.5 px-3 py-1.5 border border-emerald-500/30 bg-[#0c1624] text-slate-200 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all cursor-pointer h-[32px] shadow-sm'
             />
           </div>
         </div>
       </header>
 
-      {/* Page Content: spans full available vertical space between top header and bottom footer */}
-      <div className='relative z-20 flex flex-1 min-h-0 flex-col items-center justify-center px-3 sm:px-4 pt-2 sm:pt-6 pb-2 sm:py-8 w-full'>
-        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg flex flex-col flex-1 min-h-0 space-y-2.5 sm:space-y-6'>
+      {/* Page Content: full available height on mobile, cleanly centered and viewport-fitted on desktop */}
+      <div className='relative z-20 flex flex-1 min-h-0 flex-col items-center justify-center px-3 sm:px-6 md:px-8 lg:px-10 2xl:px-16 py-2 sm:py-3 md:py-5 2xl:py-8 w-full sm:overflow-hidden'>
+        <div className='w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-6xl flex flex-col flex-1 min-h-0 justify-center space-y-2 sm:space-y-3 md:space-y-4 2xl:space-y-8 sm:my-auto'>
           {children}
         </div>
       </div>
 
-      {/* Footer on both mobile and desktop: placed directly under the container */}
-      <div className='w-full relative z-10 pb-20 sm:pb-0 shrink-0'>
+      {/* Footer on both mobile and desktop */}
+      <div className='w-full sm:mt-auto relative z-10 pb-20 sm:pb-0 shrink-0'>
         <Footer />
       </div>
     </main>
