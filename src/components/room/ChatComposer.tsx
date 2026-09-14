@@ -17,29 +17,47 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
 
   const submit = () => {
     if (!canSend) return;
-    onSend(input);
+    const textToSend = input;
     setInput("");
+    onSend(textToSend);
+    // Keep focus on mobile/desktop without losing virtual keyboard
+    inputRef.current?.focus();
   };
 
   return (
     <div className='border-t border-emerald-500/20 px-3 py-2.5 sm:px-5 sm:py-3 bg-[#08101a]/95 shrink-0 font-mono'>
-      <div className='flex items-center gap-2 md:gap-3 w-full'>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submit();
+        }}
+        className='flex items-center gap-2 md:gap-3 w-full'
+      >
         <div className='relative flex-1 flex items-center'>
           <span className='absolute left-3 text-emerald-400 font-bold select-none text-xs sm:text-sm'>&gt;</span>
           <input
             ref={inputRef}
+            type='text'
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") submit();
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submit();
+              }
             }}
             placeholder={t("inputPlaceholder")}
             className='w-full rounded-none border border-slate-700/70 bg-[#0c1624] pl-7 pr-3 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:bg-[#0e1b2d] focus:outline-none transition-all placeholder:text-left'
           />
         </div>
         <button
-          onClick={submit}
+          type='submit'
           disabled={!canSend}
+          onPointerDown={(e) => {
+            // CRITICAL FOR MOBILE: Prevent button tap from blurring the input
+            // which causes the mobile virtual keyboard to close and re-open.
+            e.preventDefault();
+          }}
           title={t("send")}
           className='group flex items-center justify-center gap-1.5 cursor-pointer rounded-none bg-emerald-500 border border-emerald-400 px-4 py-2.5 sm:py-3 text-slate-950 font-bold transition-all hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
         >
@@ -48,7 +66,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
             <path d='M3.478 2.404a.75.75 0 00-.926.941l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.404z' />
           </svg>
         </button>
-      </div>
+      </form>
     </div>
   );
 };

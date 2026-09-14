@@ -220,7 +220,7 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
           {/* Messages scroll feed */}
           <div
             ref={containerRef}
-            className='flex-1 min-h-0 overflow-y-auto px-3.5 py-4 sm:px-6 sm:py-5 scroll-smooth w-full flex flex-col'
+            className='flex-1 min-h-0 overflow-y-auto px-3.5 py-4 sm:px-6 sm:py-5 w-full overscroll-contain touch-pan-y'
           >
             {isLoading ? (
               <div className='flex h-full items-center justify-center text-emerald-400/70 text-[11px] md:text-[12px] uppercase tracking-widest animate-pulse'>
@@ -258,7 +258,9 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
                 </p>
               </div>
             ) : (
-              <div className='flex flex-col justify-end min-h-full space-y-3 sm:space-y-3.5'>
+              <div className='flex flex-col min-h-full space-y-3 sm:space-y-3.5'>
+                {/* Spacer that pushes messages down when there are few messages, without breaking top scrolling when filled */}
+                <div className='flex-1' />
                 {messages.map((msg) => (
                   <MessageBubble
                     key={msg.id}

@@ -48,7 +48,6 @@ export const useRoomChat = (
         { sender: username || "Anonyme", text: encrypted },
         { query: { roomId } },
       );
-      inputRef.current?.focus();
     },
   });
 
