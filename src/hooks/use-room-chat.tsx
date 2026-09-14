@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRef, useState, type MutableRefObject } from "react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { client } from "@/lib/client";
 import { encryptText, decryptText } from "@/lib/crypto";
 import { useRealtime } from "@/lib/realtime-client";
@@ -69,15 +69,9 @@ export const useRoomChat = (
           activeUsersRef.current.add(data.username);
           otherUsersCountRef.current = activeUsersRef.current.size;
 
-          toast.info(
-            <span>
-              <span className='text-emerald-400 font-bold'>
-                {data.username}
-              </span>{" "}
-              A REJOINT LA SESSION
-            </span>,
-            { icon: () => "👋" },
-          );
+          toast.info(`${data.username} a rejoint la room`, {
+            icon: "👋",
+          });
           setSystemEvents((prev) => [
             ...prev,
             {
@@ -86,7 +80,7 @@ export const useRoomChat = (
               clearText: (
                 <>
                   <span className='text-white font-bold'>{data.username}</span>{" "}
-                  a rejoint la session
+                  a rejoint la room
                 </>
               ),
               timestamp: Date.now(),
@@ -95,16 +89,16 @@ export const useRoomChat = (
         }
 
         if (event === "chat.leave") {
+          const wasActive = activeUsersRef.current.has(data.username);
           activeUsersRef.current.delete(data.username);
           otherUsersCountRef.current = activeUsersRef.current.size;
 
-          toast.error(
-            <span>
-              <span className='text-red-500 font-bold'>{data.username}</span> A
-              QUITTÉ LA SESSION
-            </span>,
-            { icon: () => "🚪" },
-          );
+          if (!wasActive) return;
+
+          toast.error(`${data.username} a quitté la room`, {
+            id: `user-leave-${data.username}`,
+            icon: "🚪",
+          });
           setSystemEvents((prev) => [
             ...prev,
             {
@@ -112,10 +106,10 @@ export const useRoomChat = (
               sender: "SYSTEM",
               clearText: (
                 <>
-                  <span className='text-red-500 font-bold'>
+                  <span className='text-red-400 font-bold'>
                     {data.username}
                   </span>{" "}
-                  a quitté la session
+                  a quitté la room
                 </>
               ),
               timestamp: Date.now(),

@@ -26,3 +26,182 @@ body {
   color: var(--foreground);
   font-family: var(--font-jetbrains-mono);
 }
+
+/* Sonner Centering, Tactical Cyber Corners & Sizing */
+[data-sonner-toaster][data-y-position='top'] {
+  top: 8px !important;
+}
+
+@media (min-width: 640px) {
+  [data-sonner-toaster][data-y-position='top'] {
+    top: 12px !important;
+  }
+}
+
+[data-sonner-toaster][data-x-position='center'] {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] {
+  text-align: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 8px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  background-color: #09151e !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  border-radius: 0px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.2) !important;
+  color: #ffffff !important;
+  /* 4 crisp tactical cyber corners rendered with conic gradients */
+  background-image:
+    linear-gradient(to right, #34d399 2px, transparent 2px),
+    linear-gradient(to bottom, #34d399 2px, transparent 2px),
+    linear-gradient(to left, #34d399 2px, transparent 2px),
+    linear-gradient(to bottom, #34d399 2px, transparent 2px),
+    linear-gradient(to right, #34d399 2px, transparent 2px),
+    linear-gradient(to top, #34d399 2px, transparent 2px),
+    linear-gradient(to left, #34d399 2px, transparent 2px),
+    linear-gradient(to top, #34d399 2px, transparent 2px) !important;
+  background-position:
+    top left, top left,
+    top right, top right,
+    bottom left, bottom left,
+    bottom right, bottom right !important;
+  background-size: 8px 8px !important;
+  background-repeat: no-repeat !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type='error'] {
+  border-color: rgba(239, 68, 68, 0.7) !important;
+  background-color: #15090d !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 30px rgba(239, 68, 68, 0.35) !important;
+  background-image:
+    linear-gradient(to right, #ef4444 2.5px, transparent 2.5px),
+    linear-gradient(to bottom, #ef4444 2.5px, transparent 2.5px),
+    linear-gradient(to left, #ef4444 2.5px, transparent 2.5px),
+    linear-gradient(to bottom, #ef4444 2.5px, transparent 2.5px),
+    linear-gradient(to right, #ef4444 2.5px, transparent 2.5px),
+    linear-gradient(to top, #ef4444 2.5px, transparent 2.5px),
+    linear-gradient(to left, #ef4444 2.5px, transparent 2.5px),
+    linear-gradient(to top, #ef4444 2.5px, transparent 2.5px) !important;
+  background-position:
+    top left, top left,
+    top right, top right,
+    bottom left, bottom left,
+    bottom right, bottom right !important;
+  background-size: 8px 8px !important;
+  background-repeat: no-repeat !important;
+}
+
+[data-sonner-toaster] [data-icon] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type='error'] [data-icon] {
+  color: #ef4444 !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type='info'] {
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  background-color: #09151e !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.2) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type='success'] {
+  border-color: rgba(52, 211, 153, 0.5) !important;
+  background-color: #09151e !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.25) !important;
+}
+
+[data-sonner-toaster] [data-content] {
+  text-align: center !important;
+  justify-content: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.05em !important;
+  margin: 0 !important;
+}
+
+@media (min-width: 640px) {
+  [data-sonner-toaster] [data-content] {
+    font-size: 12px !important;
+    letter-spacing: 0.06em !important;
+  }
+}
+
+[data-sonner-toaster] [data-title] {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+}
+
+/* Tactical Cyber Range Slider */
+.temporis-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 32px;
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+}
+
+.temporis-slider:focus {
+  outline: none;
+}
+
+.temporis-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  background: #10b981;
+  border: 2px solid #34d399;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7), inset 0 0 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.temporis-slider::-webkit-slider-thumb:hover {
+  background: #34d399;
+  box-shadow: 0 0 18px rgba(52, 211, 153, 0.95);
+  transform: scale(1.12);
+}
+
+.temporis-slider::-webkit-slider-thumb:active {
+  transform: scale(0.96);
+  background: #059669;
+}
+
+.temporis-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 0px;
+  background: #10b981;
+  border: 2px solid #34d399;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.7);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.temporis-slider::-moz-range-thumb:hover {
+  background: #34d399;
+  box-shadow: 0 0 18px rgba(52, 211, 153, 0.95);
+  transform: scale(1.12);
+}
+

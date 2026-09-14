@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { client } from "@/lib/client";
 
 export type RoomExitReason = "destroyed" | "error" | "full";
@@ -68,30 +68,46 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
       await client.room.delete(null, { query: { roomId } });
     },
     onError: () => {
-      toast.error("Échec de la destruction de la room.");
+      toast.error("Échec de la fermeture de la room.");
     },
   });
 
   // Tab close / refresh: leave the room.
-  // The server will wait 10 seconds before deleting the room to allow for a page refresh.
+  // Using fetch keepalive (with credentials: 'include') so cookies are guaranteed to be sent
+  // across all modern browsers.
   useEffect(() => {
     if (!username) return;
 
+    let tabCloseFired = false;
     const handleTabClose = () => {
-      fetch(`/api/room/leave?roomId=${roomId}&unload=true`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username }),
-        keepalive: true,
-      }).catch(() => {});
+      if (tabCloseFired) return;
+      tabCloseFired = true;
+
+      const url = `/api/room/leave?roomId=${encodeURIComponent(roomId)}&unload=true`;
+      const data = JSON.stringify({ username });
+
+      try {
+        fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: data,
+          keepalive: true,
+          credentials: "include",
+        }).catch(() => {});
+      } catch {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([data], { type: "application/json" });
+          navigator.sendBeacon(url, blob);
+        }
+      }
     };
 
-    const handleBeforeUnload = () => {
-      handleTabClose();
+    window.addEventListener("beforeunload", handleTabClose);
+    window.addEventListener("pagehide", handleTabClose);
+    return () => {
+      window.removeEventListener("beforeunload", handleTabClose);
+      window.removeEventListener("pagehide", handleTabClose);
     };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [username, roomId]);
 
   // Back/forward navigation: if alone, intercept and show the confirmation modal

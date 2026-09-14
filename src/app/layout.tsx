@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { getLocale, getMessages } from "next-intl/server";
+import { DynamicIntlProvider, type SupportedLocale } from "@/components/common/DynamicIntlProvider";
 import { Providers } from "@/components/Providers";
 import ToastProvider from "@/components/ToastProvider";
 
@@ -17,16 +19,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = (await getLocale()) as SupportedLocale;
+  const messages = await getMessages();
+
   return (
-    <html lang='fr' className={`${jetBrainsMono.variable} h-full antialiased`}>
-      <body className='min-h-full flex flex-col bg-[#0d1621]'>
-        <Providers>{children}</Providers>
-        <ToastProvider />
+    <html lang={locale} className={`${jetBrainsMono.variable} h-full antialiased`}>
+      <body className='min-h-full flex flex-col bg-[#090f17] text-slate-100'>
+        <DynamicIntlProvider initialLocale={locale} initialMessages={messages}>
+          <Providers>{children}</Providers>
+          <ToastProvider />
+        </DynamicIntlProvider>
       </body>
     </html>
   );

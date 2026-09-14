@@ -4,18 +4,35 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useUsername from "@/hooks/use-username";
 import JoinScreen from "@/components/join/JoinScreen";
-import Panel from "@/components/common/Panel";
-import Button from "@/components/common/Button";
-import BrandMark from "@/components/common/BrandMark";
 
 export default function JoinPage() {
-  const { username } = useUsername();
+  const { username, regenerateUsername } = useUsername();
   const params = useParams();
   const router = useRouter();
   const roomId = params.roomId as string;
 
   const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+  useEffect(() => {
+    setIsMounted(true);
+    // Prefetch room TTL so the timer laser bar has the exact remaining time immediately upon entering
+    if (roomId) {
+      import("@/lib/client").then(({ client }) => {
+        client.room.ttl.get({ query: { roomId } }).then((res) => {
+          if (res.data?.ttl !== undefined) {
+            try {
+              sessionStorage.setItem(
+                `temporis_ttl_${roomId}`,
+                JSON.stringify({ ttl: res.data.ttl, timestamp: Date.now() })
+              );
+              if (res.data.initialTtl) {
+                sessionStorage.setItem(`temporis_ttl_${roomId}_initial`, String(res.data.initialTtl));
+              }
+            } catch {}
+          }
+        }).catch(() => {});
+      });
+    }
+  }, [roomId]);
 
   if (!isMounted) {
     return (
@@ -25,36 +42,11 @@ export default function JoinPage() {
     );
   }
 
-  // Handles new users joining via invite link
-  if (!username) {
-    return (
-      <>
-        <BrandMark />
-        <Panel>
-          <div className="p-6 md:p-10 space-y-6 text-center">
-            <p className="text-[10px] md:text-[11px] uppercase tracking-widest text-slate-500">
-              Identité requise
-            </p>
-            <h2 className="text-sm md:text-base text-slate-200">
-              Vous devez générer une identité anonyme avant de rejoindre cette session.
-            </h2>
-            <Button 
-              variant="primary" 
-              className="w-full" 
-              onClick={() => router.push("/")}
-            >
-              Créer mon identité
-            </Button>
-          </div>
-        </Panel>
-      </>
-    );
-  }
-
   return (
     <JoinScreen
       username={username}
       roomId={roomId}
+      onRegenerateUsername={regenerateUsername}
       onJoin={() => router.push(`/room/${roomId}${window.location.hash}`)}
       onDecline={() => router.push("/")}
     />

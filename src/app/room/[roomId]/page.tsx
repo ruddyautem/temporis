@@ -2,18 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import useUsername from "@/hooks/use-username";
 import { useRoomSession } from "@/hooks/use-room-session";
 import { useRoomCountdown } from "@/hooks/use-room-countdown";
 import { useRoomChat } from "@/hooks/use-room-chat";
 import { useChatViewport } from "@/hooks/use-chat-viewport";
 import LeaveConfirmDialog from "@/components/room/LeaveConfirmDialog";
+import DestroyConfirmDialog from "@/components/room/DestroyConfirmDialog";
 import RoomHeader from "@/components/room/RoomHeader";
 import ChatPanel from "@/components/room/ChatPanel";
 import ChatComposer from "@/components/room/ChatComposer";
+import AppBackground from "@/components/common/AppBackground";
 
 const Page = () => {
+  const t = useTranslations("Room");
   const { username } = useUsername();
   const params = useParams();
   const roomId = params.roomId as string;
@@ -54,7 +58,7 @@ const Page = () => {
     isDestroying,
   } = useRoomSession(roomId, username);
 
-  const secondsRemaining = useRoomCountdown(roomId, handleExit);
+  const { secondsRemaining, initialSeconds } = useRoomCountdown(roomId, handleExit);
 
   const { isLoading, displayMessages, sendMessage, isSending, inputRef } =
     useRoomChat(roomId, username, handleExit, otherUsersCountRef, cryptoKey);
@@ -70,29 +74,28 @@ const Page = () => {
   const copyInviteLink = () => {
     const joinUrl = `${window.location.origin}/join/${roomId}${window.location.hash}`;
     navigator.clipboard.writeText(joinUrl);
-    if (!toast.isActive("copy-toast")) {
-      toast.success("LIEN DE SESSION COPIÉ", {
-        toastId: "copy-toast",
-        icon: () => "🔗",
-      });
-    }
+    toast.success(t("linkCopied"), {
+      id: "copy-toast",
+    });
   };
+
+  const [showDestroyModal, setShowDestroyModal] = useState(false);
 
   return (
     <>
       {keyError && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-          <div className="bg-[#0a1118] border border-red-500/30 p-6 md:p-8 rounded-2xl max-w-md w-full text-center shadow-2xl">
+          <div className="bg-[#0a1118] border border-red-500/30 p-6 md:p-8 rounded-none max-w-md w-full text-center shadow-2xl">
             <span className="text-red-500 text-4xl mb-4 block">🔒</span>
-            <h2 className="text-red-400 font-bold uppercase tracking-widest mb-3 text-sm md:text-base">Clé de Déchiffrement Manquante</h2>
+            <h2 className="text-red-400 font-bold uppercase tracking-widest mb-3 text-sm md:text-base">{t("missingKeyTitle")}</h2>
             <p className="text-slate-400 text-xs md:text-sm mb-6 leading-relaxed">
-              Impossible d&apos;accéder à la conversation. Le lien que vous avez utilisé ne contient pas la clé de déchiffrement sécurisée.
+              {t("missingKeyDesc")}
             </p>
             <button
               onClick={() => window.location.href = "/"}
-              className="px-6 py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl text-xs uppercase tracking-widest font-bold hover:bg-red-500/20 transition-colors w-full"
+              className="px-6 py-3 bg-red-500/10 text-red-400 border border-red-500/30 rounded-none text-xs uppercase tracking-widest font-bold hover:bg-red-500/20 transition-colors w-full cursor-pointer"
             >
-              Retour à l&apos;accueil
+              {t("leave")}
             </button>
           </div>
         </div>
@@ -108,34 +111,47 @@ const Page = () => {
         />
       )}
 
+      <DestroyConfirmDialog
+        isOpen={showDestroyModal}
+        isDestroying={isDestroying}
+        onConfirm={() => {
+          destroyRoom();
+        }}
+        onCancel={() => setShowDestroyModal(false)}
+      />
+
       <main
         ref={mainRef}
-        className='flex flex-col bg-[#0d1621] text-slate-100 overflow-hidden font-mono fixed inset-x-0'
+        className='relative flex flex-col bg-[#070d15] text-slate-100 overflow-hidden font-mono fixed inset-x-0 h-full'
       >
+        <AppBackground variant='grid' />
+
         <RoomHeader
-          roomId={roomId}
-          secondsRemaining={secondsRemaining}
           onCopyLink={copyInviteLink}
-          onDestroy={() => destroyRoom()}
+          onDestroy={() => setShowDestroyModal(true)}
           isDestroying={isDestroying}
         />
 
-        <ChatPanel
-          ref={scrollContainerRef}
-          isLoading={isLoading}
-          messages={displayMessages}
-          currentUsername={username}
-          scrollAnchorRef={scrollAnchorRef}
-          hasNewMessage={hasNewMessage}
-          onJumpToBottom={jumpToBottom}
-        />
-
-        <ChatComposer
-          inputRef={inputRef}
-          isReady={isClient}
-          isSending={isSending}
-          onSend={(text) => sendMessage({ text })}
-        />
+        <div className='relative z-10 flex-1 flex flex-col min-h-0'>
+          <ChatPanel
+            ref={scrollContainerRef}
+            isLoading={isLoading}
+            messages={displayMessages}
+            currentUsername={username}
+            scrollAnchorRef={scrollAnchorRef}
+            hasNewMessage={hasNewMessage}
+            onJumpToBottom={jumpToBottom}
+            secondsRemaining={secondsRemaining}
+            initialSeconds={initialSeconds}
+          >
+            <ChatComposer
+              inputRef={inputRef}
+              isReady={isClient}
+              isSending={isSending}
+              onSend={(text) => sendMessage({ text })}
+            />
+          </ChatPanel>
+        </div>
       </main>
     </>
   );

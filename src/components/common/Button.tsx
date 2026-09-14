@@ -24,7 +24,7 @@ const Button = ({
 }: ButtonProps) => (
   <button
     {...props}
-    className={`cursor-pointer rounded-xl border py-4 text-[11px] sm:text-[11px] md:text-[12px]font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed ${VARIANT_CLASSES[variant]} ${className}`}
+    className={`cursor-pointer rounded-none border py-4 text-[11px] sm:text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed ${VARIANT_CLASSES[variant]} ${className}`}
   >
     {children}
   </button>

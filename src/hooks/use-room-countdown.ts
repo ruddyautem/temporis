@@ -12,7 +12,34 @@ export const useRoomCountdown = (
   roomId: string,
   onExpire: (reason: RoomExitReason) => void,
 ) => {
-  const [secondsRemaining, setSecondsRemaining] = useState<number | null>(null);
+  const storageKey = `temporis_ttl_${roomId}`;
+
+  const [secondsRemaining, setSecondsRemaining] = useState<number | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const cached = sessionStorage.getItem(storageKey);
+      if (cached) {
+        const { ttl, timestamp } = JSON.parse(cached);
+        const elapsed = Math.floor((Date.now() - timestamp) / 1000);
+        return Math.max(0, ttl - elapsed);
+      }
+    } catch {
+      // Ignore sessionStorage read errors
+    }
+    return null;
+  });
+
+  const [initialSeconds, setInitialSeconds] = useState<number | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const cached = sessionStorage.getItem(`${storageKey}_initial`);
+      if (cached) return parseInt(cached, 10);
+    } catch {
+      // Ignore
+    }
+    return null;
+  });
+
   const lastSyncedValue = useRef<number | undefined>(undefined);
 
   const { data: ttlData } = useQuery({
@@ -28,9 +55,20 @@ export const useRoomCountdown = (
   useEffect(() => {
     if (ttlData?.ttl !== undefined && ttlData.ttl !== lastSyncedValue.current) {
       setSecondsRemaining(ttlData.ttl);
+      if (ttlData.initialTtl) {
+        setInitialSeconds(ttlData.initialTtl);
+        try {
+          sessionStorage.setItem(`${storageKey}_initial`, String(ttlData.initialTtl));
+        } catch {}
+      } else {
+        setInitialSeconds((prev) => (prev === null ? ttlData.ttl : Math.max(prev, ttlData.ttl)));
+      }
+      try {
+        sessionStorage.setItem(storageKey, JSON.stringify({ ttl: ttlData.ttl, timestamp: Date.now() }));
+      } catch {}
       lastSyncedValue.current = ttlData.ttl;
     }
-  }, [ttlData?.ttl]);
+  }, [ttlData, storageKey]);
 
   const isRunning = secondsRemaining !== null;
   useEffect(() => {
@@ -45,5 +83,5 @@ export const useRoomCountdown = (
     if (secondsRemaining === 0) onExpire("destroyed");
   }, [secondsRemaining, onExpire]);
 
-  return secondsRemaining;
+  return { secondsRemaining, initialSeconds };
 };

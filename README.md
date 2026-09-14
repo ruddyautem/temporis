@@ -12,40 +12,47 @@
 
 ### 📋 Présentation
 
-Bienvenue sur le code source de **Temporis**. J'avais envie de créer une application de messagerie qui soit véritablement éphémère et ultra-sécurisée. L'idée : un espace d'échange anonyme, en tête-à-tête, où aucun message en clair ne touche jamais un serveur, et où tout s'autodétruit à la seconde où la conversation est terminée. Le résultat est Temporis : un chat chiffré de bout en bout (E2EE) directement dans le navigateur.
+Bienvenue sur le code source de **Temporis**. Une application de messagerie véritablement éphémère, anonyme et ultra-sécurisée. L'idée : un espace d'échange où aucun message en clair ne touche jamais un serveur, et où tout s'autodétruit dès la fin de la conversation. Le résultat est Temporis : un chat chiffré de bout en bout (E2EE) avec une expérience soignée, tactile et réactive.
 
 ### 📑 Les fonctionnalités
 
-| Fonctionnalité             | Ce que ça fait sous le capot                                                                                                                               |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Chiffrement E2EE**       | L'API Web Crypto (AES-GCM) chiffre/déchiffre les messages côté client. Le serveur ne relaie que des paquets illisibles.                                    |
-| **Secret Absolu**          | La clé AES est générée dans votre navigateur et envoyée à l'autre participant via l'ancre de l'URL (`#key=...`). Elle n'est **jamais** envoyée au serveur. |
-| **Temps Réel**             | WebSockets alimentés par Upstash Realtime pour une latence minimale.                                                                                       |
-| **Autodestruction**        | Chaque salon possède un TTL strict (jusqu'à 30 min).                                                                                                       |
-| **Fermeture intelligente** | Si les 2 participants quittent le salon (fermeture de l'onglet), tout est **immédiatement effacé** (Option Destruction Instantanée).                       |
-| **Tolérance au F5**        | Un système de "Ping" de 2 secondes permet de différencier un rafraîchissement de page d'une vraie déconnexion, évitant de détruire le salon par erreur.    |
+| Fonctionnalité | Ce que ça fait sous le capot |
+| --- | --- |
+| **Chiffrement E2EE** | L'API Web Crypto (`AES-GCM` 256-bit) chiffre et déchiffre les messages côté client. Le serveur ne relaie que des paquets illisibles. |
+| **Secret Absolu** | La clé AES est générée dans le navigateur et transmise via le fragment d'URL (`#key=...`). Elle n'est **jamais** envoyée au serveur. |
+| **Temps Réel** | WebSockets alimentés par Upstash Realtime pour une latence minimale. |
+| **Autodestruction & TTL** | Chaque salon dispose d'un compte à rebours strict (5, 15 ou 30 min) matérialisé par une jauge laser. À expiration, toutes les données sont purgées de Redis. |
+| **Sélecteur de durée tactile** | Sélecteur de temps ergonomique sous forme de curseur tactile avec paliers visuels tactiques (5, 15 et 30 min), segments cliquables et remplissage dynamique. |
+| **Période de grâce de 10s** | Lorsqu'un utilisateur ferme son onglet ou actualise sa page (F5), un délai de grâce de 10 secondes est accordé. S'il ne revient pas, son départ est notifié et sa place est automatiquement libérée dans Redis. |
+| **Fermeture intelligente** | Si les 2 participants quittent le salon ou cliquent sur "Détruire", le salon et ses messages sont **immédiatement effacés**. |
+| **Notifications Sonner empilées** | Système de notifications toasts unifié et typé qui se superpose élégamment en pile en cas d'événements multiples. |
+| **Internationalisation complète** | Support bilingue Français / Anglais avec sélecteur de langue dynamique (`next-intl`), rendu avec de vrais drapeaux vectoriels SVG (compatibilité totale Chrome Windows/Linux/macOS/mobile). |
+| **Responsive Design Cyberpunk** | Interface sombre cyberpunk soignée, optimisée pour mobile et desktop, avec footer compact ajusté directement sous les conteneurs. |
 
 ### 🔒 Sécurité et Chiffrement
 
-J'ai pris le temps de verrouiller l'architecture de la messagerie :
+L'architecture technique est conçue pour garantir une confidentialité maximale :
 
-- La clé AES-256-GCM est convertie en Base64URL sécurisé pour être placée dans l'URL.
-- Chaque message possède son propre vecteur d'initialisation (IV) généré aléatoirement.
-- Le serveur utilise le middleware d'ElysiaJS pour distribuer des `x-auth-token` sous forme de cookies HttpOnly, limitant l'accès au salon strictement à 2 personnes.
+- **AES-256-GCM** : Clé symétrique générée via `crypto.subtle.generateKey` et sérialisée en Base64URL sécurisé dans l'ancre d'URL (`#key=...`).
+- **IV Aléatoire unique** : Chaque message génère un vecteur d'initialisation (12 octets) aléatoire distinct.
+- **Contrôle d'accès strict** : Le middleware backend (`proxy.ts` et Elysia `authMiddleware`) distribue des jetons sous forme de cookies HttpOnly `SameSite=Strict` limitant l'accès au salon strictement à 2 personnes simultanées.
+- **Zéro fuite de données** : Les messages en clair ne sont jamais enregistrés en base ni loggés sur le serveur.
 
 ### 🛠 Stack technique
 
-| Catégorie       | Technologies                    |
-| --------------- | ------------------------------- |
-| Framework       | Next.js 16 (App Router) + React |
-| Langage         | TypeScript                      |
-| Backend API     | ElysiaJS (Eden)                 |
-| Package manager | Bun                             |
-| Styling         | Tailwind CSS v4                 |
-| Base de données | Upstash Redis                   |
-| Temps Réel      | Upstash Realtime                |
-| Chiffrement     | Web Crypto API (AES-GCM)        |
-| Qualité de code | ESLint v9 + Prettier            |
+| Catégorie | Technologies |
+| --- | --- |
+| Framework | Next.js 16 (App Router) + React 19 |
+| Langage | TypeScript (typage strict de bout en bout) |
+| Backend API | ElysiaJS (Eden Treaty) |
+| Runtime & Packages | Bun |
+| Styling | Tailwind CSS v4 + animations CSS |
+| Base de données | Upstash Redis |
+| Temps Réel | Upstash Realtime (WebSockets) |
+| Chiffrement | Web Crypto API (`AES-GCM`) |
+| Internationalisation | `next-intl` (Français / English) |
+| Notifications | Sonner |
+| Qualité de code | ESLint v9 + Prettier |
 
 ### 📁 Structure du projet
 
@@ -53,31 +60,37 @@ J'ai pris le temps de verrouiller l'architecture de la messagerie :
 Temporis/
 ├── src/
 │   ├── app/
-│   │   ├── (lobby)/                 # Page d'accueil (création de salon)
+│   │   ├── (lobby)/                 # Page d'accueil (création de salon & join)
+│   │   │   ├── join/[roomId]/       # Écran d'invitation pour le 2ème participant
+│   │   │   ├── layout.tsx           # Layout lobby avec header et footer adaptatif
+│   │   │   └── page.tsx             # Configuration de la room
 │   │   ├── api/                     # Backend API
 │   │   │   ├── realtime/            # Émission de tokens WebSocket
 │   │   │   └── [[...slugs]]/        # Routes de l'API Elysia
-│   │   │       ├── auth.ts          # Middleware de sécurité (cookies, places)
-│   │   │       └── route.ts         # Endpoints (create, join, leave, messages)
-│   │   ├── join/[roomId]/           # Page de redirection pour les invités
+│   │   │       ├── auth.ts          # Middleware de sécurité (cookies, vérification token)
+│   │   │       └── route.ts         # Endpoints (create, join, leave avec lock 10s, messages)
 │   │   └── room/[roomId]/           # Salon de chat chiffré E2EE
 │   ├── components/                  # Composants UI
-│   │   ├── common/                  # UI partagée (Boutons, Badges, Fonds)
-│   │   ├── lobby/                   # Configuration du salon (Durée, etc.)
-│   │   └── room/                    # Panneau de chat, champ de saisie, header
-│   ├── hooks/                       # Logique client complexe
-│   │   ├── use-room-chat.tsx        # Récupération & Chiffrement/Déchiffrement
-│   │   ├── use-room-session.ts      # Gestion F5, beforeunload et Ping
+│   │   ├── common/                  # UI partagée (BrandMark, LanguageSwitcher avec SVG, Fond)
+│   │   ├── lobby/                   # Configuration du salon (slider de durée, statut)
+│   │   ├── room/                    # Header (Partager, Détruire), panneau de chat, input
+│   │   ├── Footer.tsx               # Footer responsive et compact
+│   │   └── ToastProvider.tsx        # Configuration des toasts Sonner empilables
+│   ├── hooks/                       # Logique client réactive
+│   │   ├── use-room-chat.tsx        # Récupération, déchiffrement & gestion des messages
+│   │   ├── use-room-session.ts      # Gestion F5, pagehide/beforeunload & libération de place
+│   │   ├── use-room-countdown.ts    # Compte à rebours temps réel synchronisé
 │   │   └── use-chat-viewport.ts     # Défilement automatique intelligent
 │   ├── lib/                         # Utilitaires métier
 │   │   ├── crypto.ts                # Wrapper Web Crypto API AES-GCM
 │   │   ├── redis.ts                 # Client Upstash Redis
 │   │   ├── realtime.ts              # Client Upstash Realtime
+│   │   ├── room-config.ts           # Constantes et durées de salon
 │   │   └── client.ts                # Client Eden (Elysia) typé de bout en bout
-│   └── proxy.ts                     # Middleware Next.js : Restriction d'accès
-├── .env                             # Clés Upstash
+│   └── proxy.ts                     # Middleware Next.js : Contrôle d'accès & redirection
+├── messages/                        # Dictionnaires de traduction (fr.json, en.json)
+├── .env                             # Clés Upstash (Redis & Realtime)
 ├── bun.lock
-├── eslint.config.mjs
 ├── package.json
 └── README.md
 ```
@@ -98,7 +111,7 @@ Direction [http://localhost:3000](http://localhost:3000).
 
 ### À propos de moi
 
-Je suis Ruddy Autem, développeur Full Stack. Si le code vous inspire ou que vous voulez discuter, n'hésitez pas — vous me trouverez sur [autem.dev](https://autem.dev) ou [GitHub](https://github.com/ruddyautem).
+Je suis Ruddy Autem, développeur Full Stack. Si le code vous inspire ou que vous voulez échanger, n'hésitez pas — vous me trouverez sur [autem.dev](https://autem.dev) ou [GitHub](https://github.com/ruddyautem).
 
 ---
 
@@ -106,77 +119,90 @@ Je suis Ruddy Autem, développeur Full Stack. Si le code vous inspire ou que vou
 
 ### 📋 Overview
 
-Welcome to the source code of **Temporis**. I wanted to create a messaging app that is truly ephemeral and highly secure. The idea: an anonymous, one-on-one chat space where no plaintext message ever touches a server, and everything self-destructs the moment the conversation ends. The result is Temporis: an End-to-End Encrypted (E2EE) chat built directly in the browser.
+Welcome to the source code of **Temporis**. A truly ephemeral, anonymous, and ultra-secure messaging application. The concept: a private, one-on-one conversation space where no plaintext message ever touches a server, and everything self-destructs the moment the chat concludes. The result is Temporis: an End-to-End Encrypted (E2EE) chat featuring a responsive, tactical cyberpunk user experience.
 
 ### 📑 Key Features
 
-| Feature              | Under the hood                                                                                                                                        |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **E2EE Encryption**  | The Web Crypto API (AES-GCM) encrypts/decrypts messages client-side. The server only relays unreadable packets.                                       |
-| **Absolute Secrecy** | The AES key is generated in your browser and shared with the other user via the URL fragment anchor (`#key=...`). It is **never** sent to the server. |
-| **Real-Time**        | WebSockets powered by Upstash Realtime for minimal latency.                                                                                           |
-| **Auto-destruction** | Every room has a strict TTL (up to 30 min).                                                                                                           |
-| **Smart teardown**   | If both participants leave the room (tab closure), everything is **instantly wiped** (Instant Destruction Option).                                    |
-| **F5 Tolerance**     | A 2-second "Ping" system differentiates a page refresh from a true disconnect, preventing accidental room destruction.                                |
+| Feature | Under the hood |
+| --- | --- |
+| **E2EE Encryption** | The Web Crypto API (`AES-GCM` 256-bit) encrypts and decrypts messages client-side. The server only relays unreadable payloads. |
+| **Absolute Secrecy** | The AES key is generated in your browser and shared via the URL fragment anchor (`#key=...`). It is **never** transmitted to the server. |
+| **Real-Time Delivery** | WebSockets powered by Upstash Realtime for near-instant message delivery. |
+| **Auto-destruction & TTL** | Every room enforces a strict countdown (5, 15, or 30 min) visualized with a laser bar. Upon expiration, all room data is completely purged from Redis. |
+| **Tactile Duration Slider** | Custom interactive slider with discrete tactical step blocks (5, 15, 30 min), full hit-box clickability, and fluid progress fill. |
+| **10-Second Grace Period** | When a user closes their tab or refreshes (F5), a 10-second grace window is granted. If they do not return, a leave notification is broadcast and their seat is released in Redis. |
+| **Smart Teardown** | When both participants leave or explicitly trigger "Destroy", the room and its messages are **instantly deleted**. |
+| **Stacked Toast Notifications** | Clean Sonner toast integration that elegantly stacks notifications upon successive room events. |
+| **Full Internationalization** | Bilingual French / English experience (`next-intl`), rendered with crisp vector SVG flags for cross-browser consistency (Windows Chrome, mobile, etc.). |
+| **Cyberpunk Responsive UI** | Polished cyberpunk dark aesthetic, optimized for mobile and desktop, featuring a compact footer positioned directly under the room card. |
 
 ### 🔒 Security and Encryption
 
-I took the time to tightly secure the messaging architecture:
+The technical architecture is built for privacy from the ground up:
 
-- The AES-256-GCM key is converted to a URL-safe Base64URL string to fit in the URL.
-- Every message has its own randomly generated Initialization Vector (IV).
-- The server uses ElysiaJS middleware to issue `x-auth-token` HttpOnly cookies, strictly limiting room access to exactly 2 people.
+- **AES-256-GCM**: Symmetric encryption key generated via `crypto.subtle.generateKey` and encoded into a safe Base64URL string placed in the URL hash (`#key=...`).
+- **Unique Random IV**: A fresh 12-byte initialization vector is generated for each individual message.
+- **Strict Capacity Control**: Backend middleware (`proxy.ts` and Elysia `authMiddleware`) assigns session cookies (`HttpOnly`, `SameSite=Strict`), strictly capping attendance at 2 concurrent users per room.
+- **Zero Plaintext Storage**: Plaintext content is never written to disk, database, or server logs.
 
-### 🛠 Tech stack
+### 🛠 Tech Stack
 
-| Category        | Technologies                    |
-| --------------- | ------------------------------- |
-| Framework       | Next.js 16 (App Router) + React |
-| Language        | TypeScript                      |
-| Backend API     | ElysiaJS (Eden)                 |
-| Package manager | Bun                             |
-| Styling         | Tailwind CSS v4                 |
-| Database        | Upstash Redis                   |
-| Real-Time       | Upstash Realtime                |
-| Encryption      | Web Crypto API (AES-GCM)        |
-| Code quality    | ESLint v9 + Prettier            |
+| Category | Technologies |
+| --- | --- |
+| Framework | Next.js 16 (App Router) + React 19 |
+| Language | TypeScript (full end-to-end strict typing) |
+| Backend API | ElysiaJS (Eden Treaty) |
+| Runtime & Package Manager | Bun |
+| Styling | Tailwind CSS v4 + CSS Animations |
+| Database | Upstash Redis |
+| Real-Time | Upstash Realtime (WebSockets) |
+| Encryption | Web Crypto API (`AES-GCM`) |
+| Internationalization | `next-intl` (French / English) |
+| Notifications | Sonner |
+| Code Quality | ESLint v9 + Prettier |
 
-### 📁 Project structure
+### 📁 Project Structure
 
 ```text
 Temporis/
 ├── src/
 │   ├── app/
-│   │   ├── (lobby)/                 # Home page (room creation)
+│   │   ├── (lobby)/                 # Home & Join page routes
+│   │   │   ├── join/[roomId]/       # Invitation screen for the 2nd user
+│   │   │   ├── layout.tsx           # Lobby layout with adaptive header & footer
+│   │   │   └── page.tsx             # Room setup & creation
 │   │   ├── api/                     # Backend API
 │   │   │   ├── realtime/            # WebSocket token issuance
-│   │   │   └── [[...slugs]]/        # Elysia API Routes
-│   │   │       ├── auth.ts          # Security middleware (cookies, capacity)
-│   │   │       └── route.ts         # Endpoints (create, join, leave, messages)
-│   │   ├── join/[roomId]/           # Redirection page for invitees
-│   │   └── room/[roomId]/           # E2EE Chat room
+│   │   │   └── [[...slugs]]/        # Elysia API routes
+│   │   │       ├── auth.ts          # Security middleware (cookies, token validation)
+│   │   │       └── route.ts         # Endpoints (create, join, leave with 10s lock, messages)
+│   │   └── room/[roomId]/           # E2EE Chat room page
 │   ├── components/                  # UI Components
-│   │   ├── common/                  # Shared UI (Buttons, Badges, Backgrounds)
-│   │   ├── lobby/                   # Room configuration (Duration, etc.)
-│   │   └── room/                    # Chat panel, composer, header
-│   ├── hooks/                       # Complex client logic
-│   │   ├── use-room-chat.tsx        # Data fetching & Encrypt/Decrypt
-│   │   ├── use-room-session.ts      # F5, beforeunload and Ping management
-│   │   └── use-chat-viewport.ts     # Smart auto-scrolling
-│   ├── lib/                         # Business utilities
+│   │   ├── common/                  # Shared UI (BrandMark, LanguageSwitcher with SVG flags, Background)
+│   │   ├── lobby/                   # Room configuration (duration slider, status banner)
+│   │   ├── room/                    # Header (Share, Destroy), chat panel, composer
+│   │   ├── Footer.tsx               # Compact, responsive footer
+│   │   └── ToastProvider.tsx        # Stackable Sonner toast configuration
+│   ├── hooks/                       # Reactive client hooks
+│   │   ├── use-room-chat.tsx        # Message fetching, encryption/decryption & events
+│   │   ├── use-room-session.ts      # Refresh/unload handling (pagehide/beforeunload) & slot release
+│   │   ├── use-room-countdown.ts    # Synchronized room timer
+│   │   └── use-chat-viewport.ts     # Intelligent auto-scrolling
+│   ├── lib/                         # Core utilities
 │   │   ├── crypto.ts                # Web Crypto API AES-GCM wrapper
 │   │   ├── redis.ts                 # Upstash Redis client
 │   │   ├── realtime.ts              # Upstash Realtime client
+│   │   ├── room-config.ts           # Room duration constants
 │   │   └── client.ts                # End-to-end typed Eden client (Elysia)
-│   └── proxy.ts                     # Next.js Middleware: Access restriction
-├── .env                             # Upstash keys
+│   └── proxy.ts                     # Next.js Middleware: Access control & redirection
+├── messages/                        # Translation files (fr.json, en.json)
+├── .env                             # Upstash keys (Redis & Realtime)
 ├── bun.lock
-├── eslint.config.mjs
 ├── package.json
 └── README.md
 ```
 
-### 🚀 Running it locally
+### 🚀 Running Locally
 
 ```bash
 git clone <repo-url>
@@ -186,10 +212,10 @@ bun install
 bun run dev
 ```
 
-Then head to [http://localhost:3000](http://localhost:3000).
+Navigate to [http://localhost:3000](http://localhost:3000).
 
-> 💡 **Requirements:** You will need a Redis database and a Realtime endpoint from [Upstash](https://upstash.com/). Fill in the corresponding variables in a `.env` file.
+> 💡 **Requirements:** You will need an Upstash Redis database and an Upstash Realtime endpoint. Configure them in your `.env` file.
 
-### About me
+### About Me
 
-I'm Ruddy Autem, a Full Stack developer. If the code speaks to you or you just want to say hi, feel free — you'll find me at [autem.dev](https://autem.dev) or on [GitHub](https://github.com/ruddyautem).
+I'm Ruddy Autem, a Full Stack developer. If you enjoy the project or want to connect, feel free to visit [autem.dev](https://autem.dev) or [GitHub](https://github.com/ruddyautem).

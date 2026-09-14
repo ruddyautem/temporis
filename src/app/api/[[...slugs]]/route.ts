@@ -35,8 +35,8 @@ const rooms = new Elysia({ prefix: "/room" })
   .post(
     "/join",
     async ({ body, auth: { roomId, token } }) => {
-      // Mark that we joined (so POST /leave knows we came back if we refreshed)
-      await redis.set(`ping:${roomId}:${token}`, "1", { ex: 5 });
+      // Mark ping for reconnect check (15s TTL to cover the 10s grace period)
+      await redis.set(`ping:${roomId}:${token}`, "1", { ex: 15 });
 
       await realtime.channel(roomId).emit("chat.join", body);
       
@@ -59,40 +59,65 @@ const rooms = new Elysia({ prefix: "/room" })
   .post(
     "/leave",
     async ({ body, auth: { roomId, token }, query }) => {
-      // If it's a beforeunload event, wait 2 seconds to see if they come back (refresh)
-      if (query.unload) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        // Check if they re-joined within 2 seconds
-        const ping = await redis.get(`ping:${roomId}:${token}`);
-        if (ping) return { success: true }; // Abort leave, it was just a refresh!
+      // Prevent multiple concurrent leave processes for the same user session
+      const lockAcquired = await redis.set(`lock:leave:${roomId}:${token}`, "1", { nx: true, ex: 30 });
+      if (!lockAcquired) {
+        return { success: true };
       }
 
-      const meta = await redis.hgetall<{ connected: string[]; initialTtl: number }>(metaKey(roomId));
-      
-      if (meta && meta.connected) {
-        const newConnected = meta.connected.filter((t) => t !== token);
-        
-        if (newConnected.length === 0) {
-          // Instant destruction (Option B) - deletes the room immediately
-          await Promise.all([
-            realtime.channel(roomId).emit("chat.destroy", { isDestroyed: true }),
-            redis.del(metaKey(roomId), msgKey(roomId), roomId),
-          ]);
-        } else {
-          await redis.hset(metaKey(roomId), { connected: newConnected });
-          const remaining = await redis.ttl(metaKey(roomId));
-          if (remaining > 0) {
-            await Promise.all([
-              redis.expire(metaKey(roomId), remaining),
-              redis.expire(msgKey(roomId), remaining),
-              redis.expire(roomId, remaining),
-            ]);
+      const processLeave = async () => {
+        try {
+          if (query.unload) {
+            // Check if user reconnected within the 10s grace period (e.g. page refresh)
+            const ping = await redis.get(`ping:${roomId}:${token}`);
+            if (ping) {
+              // User refreshed and came back within 10s: release lock and do not emit leave
+              await redis.del(`lock:leave:${roomId}:${token}`);
+              return;
+            }
           }
+
+          // Broadcast leave event
+          await realtime.channel(roomId).emit("chat.leave", body);
+
+          const meta = await redis.hgetall<{ connected: string[]; initialTtl: number }>(metaKey(roomId));
+          
+          if (meta && meta.connected) {
+            const newConnected = meta.connected.filter((t) => t !== token);
+            
+            if (newConnected.length === 0) {
+              // Instant destruction if last user truly left
+              await Promise.all([
+                realtime.channel(roomId).emit("chat.destroy", { isDestroyed: true }),
+                redis.del(metaKey(roomId), msgKey(roomId), roomId, `lock:leave:${roomId}:${token}`),
+              ]);
+            } else {
+              await redis.hset(metaKey(roomId), { connected: newConnected });
+              const remaining = await redis.ttl(metaKey(roomId));
+              if (remaining > 0) {
+                await Promise.all([
+                  redis.expire(metaKey(roomId), remaining),
+                  redis.expire(msgKey(roomId), remaining),
+                  redis.expire(roomId, remaining),
+                ]);
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Error processing leave:", err);
         }
+      };
+
+      if (query.unload) {
+        // Run asynchronously after 10s grace period so HTTP keepalive completes immediately
+        setTimeout(() => {
+          processLeave();
+        }, 10000);
+        return { success: true };
       }
 
-      await realtime.channel(roomId).emit("chat.leave", body);
-      
+      // Explicit user action (e.g., leave button clicked)
+      await processLeave();
       return { success: true };
     },
     { 
@@ -106,9 +131,16 @@ const rooms = new Elysia({ prefix: "/room" })
 
   .get(
     "/ttl",
-    async ({ auth: { roomId } }) => ({
-      ttl: Math.max(await redis.ttl(metaKey(roomId)), 0),
-    }),
+    async ({ auth: { roomId } }) => {
+      const [remaining, meta] = await Promise.all([
+        redis.ttl(metaKey(roomId)),
+        redis.hgetall<{ initialTtl: number }>(metaKey(roomId)),
+      ]);
+      return {
+        ttl: Math.max(remaining, 0),
+        initialTtl: meta?.initialTtl || 900,
+      };
+    },
     { query: RoomIdQuery },
   )
 
