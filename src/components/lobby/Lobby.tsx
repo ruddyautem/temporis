@@ -90,12 +90,12 @@ export default function Lobby() {
   };
 
   return (
-    <div className='flex flex-col flex-1 w-full font-mono gap-4 sm:gap-6'>
+    <div className='flex flex-col w-full font-mono gap-3 sm:gap-6'>
       {/* Brand Header */}
       <BrandMark />
 
       {/* Cyberpunk Card (brighter, higher contrast and clean) */}
-      <div className='border border-emerald-500/25 bg-[#0c1522]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative rounded-none overflow-hidden flex flex-col flex-1'>
+      <div className='border border-emerald-500/25 bg-[#0c1522]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative rounded-none overflow-hidden flex flex-col'>
         {/* Tactical Corner Accents */}
         <div className='absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-emerald-400/80 z-10' />
         <div className='absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-emerald-400/80 z-10' />
@@ -103,7 +103,7 @@ export default function Lobby() {
         <div className='absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-emerald-400/80 z-10' />
 
         {/* Anonymous Identity Header */}
-        <div className='flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-4 sm:px-6'>
+        <div className='flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-3 sm:py-4 sm:px-6'>
           <div className='flex items-center gap-3 min-w-0'>
             <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-none border border-emerald-500/30 bg-emerald-500/10 text-emerald-400'>
               <Icon name='user' className='h-4 w-4' />
@@ -135,17 +135,17 @@ export default function Lobby() {
         </div>
 
         {/* Content Area */}
-        <div className='p-4 sm:p-8 flex-1 sm:flex-initial flex flex-col justify-between sm:justify-start gap-5 sm:gap-7'>
-          {/* Main Encadré: on mobile, it wraps the full vertical space with info on top and timers at its bottom */}
-          <div className='flex-1 sm:flex-initial flex flex-col justify-between sm:justify-start rounded-none border border-emerald-500/20 bg-emerald-950/15 p-4 sm:p-0 sm:border-0 sm:bg-transparent gap-5 sm:gap-7'>
+        <div className='p-4 sm:p-8 flex flex-col gap-4 sm:gap-7'>
+          {/* Main Encadré: cleanly wraps info on top and duration slider at bottom */}
+          <div className='flex flex-col rounded-none border border-emerald-500/20 bg-emerald-950/15 p-3.5 sm:p-0 sm:border-0 sm:bg-transparent gap-4 sm:gap-7'>
             {/* Info Container: single unified container on desktop, matching encadré on mobile */}
-            <div className='rounded-none sm:border sm:border-emerald-500/20 sm:bg-emerald-950/15 sm:p-4 space-y-3 sm:space-y-3.5'>
+            <div className='rounded-none sm:border sm:border-emerald-500/20 sm:bg-emerald-950/15 sm:p-4 space-y-2.5 sm:space-y-3.5'>
               {/* Auto-delete item */}
               <div className='flex items-center gap-3'>
                 <div className='flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-none bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'>
                   <Icon name='clock' className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
                 </div>
-                <div className='text-xs sm:text-xs text-slate-300 leading-relaxed min-h-[2.5rem] sm:min-h-0 flex items-center'>
+                <div className='text-xs text-slate-300 leading-snug flex items-center'>
                   <span>{t("roomInfoAutoDelete", { ttl })}</span>
                 </div>
               </div>
@@ -158,14 +158,14 @@ export default function Lobby() {
                 <div className='flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-none bg-red-500/10 text-red-400 border border-red-500/20'>
                   <Icon name='trash' className='h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-400' />
                 </div>
-                <div className='text-xs text-slate-300 leading-relaxed flex items-center'>
+                <div className='text-xs text-slate-300 leading-snug flex items-center'>
                   {t("roomInfoNoHistory")}
                 </div>
               </div>
             </div>
 
             {/* Tactical Duration Slider & Header: at the bottom of the encadré on mobile, top on desktop */}
-            <div className='space-y-4 sm:space-y-5 sm:-order-1 mt-6 sm:mt-0 pt-4 sm:pt-0'>
+            <div className='space-y-3 sm:space-y-5 sm:-order-1'>
               <div className='flex items-center justify-between text-xs'>
                 <span className='text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-slate-300'>
                   {t("ttlHeader")}

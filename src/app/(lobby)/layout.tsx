@@ -7,7 +7,7 @@ import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function RoomEntryLayout({ children }: { children: ReactNode }) {
   return (
-    <main className='relative flex min-h-dvh flex-col justify-between bg-[#0b121b] text-slate-100 overflow-x-hidden selection:bg-emerald-500/20 font-mono'>
+    <main className='relative flex min-h-dvh flex-col bg-[#0b121b] text-slate-100 overflow-x-hidden selection:bg-emerald-500/20 font-mono'>
       <AppBackground variant='grid' />
 
       {/* Top Header Bar matching Chat RoomHeader style with high z-index so dropdown floats above everything */}
@@ -41,15 +41,15 @@ export default function RoomEntryLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      {/* Page Content */}
+      {/* Page Content: fits natural content size without forcing flex-1 expansion on mobile */}
       <div className='relative z-20 flex flex-1 flex-col items-center justify-start sm:justify-center px-4 pt-2.5 sm:pt-6 pb-2 sm:py-10 w-full'>
-        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg flex-1 sm:flex-initial flex flex-col space-y-3 sm:space-y-6'>
+        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg flex flex-col space-y-3 sm:space-y-6'>
           {children}
         </div>
       </div>
 
       {/* Footer on both mobile and desktop: sticks directly under the container on mobile */}
-      <div className='w-full mt-2 sm:mt-auto relative z-10 pb-20 sm:pb-0'>
+      <div className='w-full mt-2 sm:mt-auto relative z-10 pb-20 sm:pb-0 shrink-0'>
         <Footer />
       </div>
     </main>

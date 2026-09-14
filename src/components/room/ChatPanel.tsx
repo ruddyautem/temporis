@@ -95,10 +95,10 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
     const percent = Math.round(ratio * 100);
 
     // Dynamic thresholds proportional to total chosen TTL:
-    // - Danger / Imminent: last 5% of total time (or max 60s, min 15s)
-    // - Warning / Expiration soon: last 20% of total time (or max 120s, min 30s)
-    const dangerThreshold = Math.max(15, Math.min(60, Math.round(total * 0.05)));
-    const warningThreshold = Math.max(30, Math.min(120, Math.round(total * 0.20)));
+    // - Danger / Imminent (Red): last 10% of total time
+    // - Warning / Expiration soon (Yellow/Orange): last 25% of total time
+    const dangerThreshold = Math.round(total * 0.10);
+    const warningThreshold = Math.round(total * 0.25);
 
     const isUrgent = secondsRemaining !== null && secondsRemaining <= dangerThreshold;
     const isWarning = secondsRemaining !== null && !isUrgent && secondsRemaining <= warningThreshold;
