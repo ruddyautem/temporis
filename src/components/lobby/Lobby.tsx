@@ -10,6 +10,7 @@ import { client } from "@/lib/client";
 import { TTL_OPTIONS, type RoomTtlMinutes } from "@/lib/room-config";
 import { Icon } from "@/components/Icons";
 import BrandMark from "@/components/common/BrandMark";
+import CyberSlider from "@/components/lobby/CyberSlider";
 
 export default function Lobby() {
   const t = useTranslations("Lobby");
@@ -174,46 +175,12 @@ export default function Lobby() {
               </div>
 
               <div className='rounded-none border border-emerald-500/25 bg-[#0b1420]/80 p-4 space-y-4'>
-                <div className='relative flex items-center h-8'>
-                  <div className='absolute left-2.5 right-2.5 h-1.5 bg-slate-800 border border-slate-700/60 pointer-events-none' />
-                  <div
-                    className='absolute left-2.5 h-1.5 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] pointer-events-none transition-all duration-150'
-                    style={{
-                      width: `calc(${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 100}% - ${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 20}px)`,
-                    }}
-                  />
-                  <div className='absolute inset-x-0 flex justify-between items-center z-30 pointer-events-none'>
-                    {TTL_OPTIONS.map((minutes) => {
-                      const isReached = minutes <= ttl;
-                      return (
-                        <button
-                          key={minutes}
-                          type='button'
-                          onClick={() => setTtl(minutes)}
-                          title={`${minutes} ${t("minutes")}`}
-                          className={`w-5 h-5 rounded-none transition-colors duration-150 cursor-pointer pointer-events-auto p-0 flex items-center justify-center ${
-                            isReached
-                              ? "bg-emerald-400 border-2 border-white"
-                              : "bg-slate-800 border border-slate-600 hover:border-emerald-400"
-                          }`}
-                        />
-                      );
-                    })}
-                  </div>
-                  <input
-                    type='range'
-                    min={0}
-                    max={TTL_OPTIONS.length - 1}
-                    step={1}
-                    value={TTL_OPTIONS.indexOf(ttl)}
-                    onChange={(e) => {
-                      const idx = Number(e.target.value);
-                      if (TTL_OPTIONS[idx]) setTtl(TTL_OPTIONS[idx]);
-                    }}
-                    aria-label={t("ttlHeader")}
-                    className='temporis-slider relative z-20'
-                  />
-                </div>
+                <CyberSlider
+                  ttl={ttl}
+                  onChange={setTtl}
+                  trackHeightClass='h-8'
+                  minutesLabel={t("minutes")}
+                />
 
                 <div className='flex justify-between items-center pt-1'>
                   {TTL_OPTIONS.map((minutes) => {
@@ -369,49 +336,12 @@ export default function Lobby() {
 
             {/* Cyber slider bar */}
             <div className='space-y-1.5 pt-0.5'>
-              <div className='relative flex items-center h-7 md:h-8 2xl:h-9'>
-                {/* Track background with inset so it sits strictly inside the center points */}
-                <div className='absolute left-2.5 right-2.5 h-1.5 bg-slate-900 border border-slate-700/80 pointer-events-none' />
-                <div
-                  className='absolute left-2.5 h-1.5 bg-emerald-500 pointer-events-none transition-all duration-150'
-                  style={{
-                    width: `calc(${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 100}% - ${(TTL_OPTIONS.indexOf(ttl) / (TTL_OPTIONS.length - 1)) * 20}px)`,
-                  }}
-                />
-
-                <div className='absolute inset-x-0 flex justify-between items-center z-30 pointer-events-none'>
-                  {TTL_OPTIONS.map((minutes) => {
-                    const isReached = minutes <= ttl;
-                    return (
-                      <button
-                        key={minutes}
-                        type='button'
-                        onClick={() => setTtl(minutes)}
-                        title={`${minutes} ${t("minutes")}`}
-                        className={`w-5 h-5 rounded-none transition-colors duration-150 cursor-pointer pointer-events-auto p-0 flex items-center justify-center ${
-                          isReached
-                            ? "bg-emerald-400 border-2 border-white"
-                            : "bg-slate-800 border border-slate-600 hover:border-emerald-400"
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
-
-                <input
-                  type='range'
-                  min={0}
-                  max={TTL_OPTIONS.length - 1}
-                  step={1}
-                  value={TTL_OPTIONS.indexOf(ttl)}
-                  onChange={(e) => {
-                    const idx = Number(e.target.value);
-                    if (TTL_OPTIONS[idx]) setTtl(TTL_OPTIONS[idx]);
-                  }}
-                  aria-label={t("ttlHeader")}
-                  className='temporis-slider relative z-20 cursor-pointer'
-                />
-              </div>
+              <CyberSlider
+                ttl={ttl}
+                onChange={setTtl}
+                trackHeightClass='h-7 md:h-8 2xl:h-9'
+                minutesLabel={t("minutes")}
+              />
             </div>
 
             {/* Launch CTA Bar - Grand, wide, prominent action block without excessive glow */}

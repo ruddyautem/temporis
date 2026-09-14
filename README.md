@@ -22,7 +22,7 @@ Bienvenue sur le code source de **Temporis**. Une application de messagerie vér
 | **Secret Absolu** | La clé AES est générée dans le navigateur et transmise via le fragment d'URL (`#key=...`). Elle n'est **jamais** envoyée au serveur. |
 | **Temps Réel** | WebSockets alimentés par Upstash Realtime pour une latence minimale. |
 | **Autodestruction & TTL** | Chaque room dispose d'un compte à rebours strict (5, 15 ou 30 min) matérialisé par une jauge laser. À expiration, toutes les données sont purgées de Redis. |
-| **Sélecteur de durée tactile** | Sélecteur de temps ergonomique sous forme de curseur tactile avec paliers visuels tactiques (5, 15 et 30 min), segments cliquables et remplissage dynamique. |
+| **Cyber Slider & Aimant Instantané** | Curseur tactile et souris fluide avec déplacement continu (`CyberSlider`), capture de pointeur, boutons de présélection instantanés et magnétisme immédiat (*magnetic snap*) vers le checkpoint le plus proche (5, 15 ou 30 min) dès le relâchement. |
 | **Période de grâce de 10s** | Lorsqu'un utilisateur ferme son onglet ou actualise sa page (F5), un délai de grâce de 10 secondes est accordé. S'il ne revient pas, son départ est notifié et sa place est automatiquement libérée dans Redis. |
 | **Fermeture intelligente** | Si les 2 participants quittent la room ou cliquent sur "Détruire", la room et ses messages sont **immédiatement effacés**. |
 | **Notifications Sonner empilées** | Système de notifications toasts unifié et typé qui se superpose élégamment en pile en cas d'événements multiples. |
@@ -72,7 +72,9 @@ Temporis/
 │   │   └── room/[roomId]/           # Chat de la room, chiffré E2EE
 │   ├── components/                  # Composants UI
 │   │   ├── common/                  # UI partagée (BrandMark, LanguageSwitcher avec SVG, Fond)
-│   │   ├── lobby/                   # Configuration de la room (slider de durée, statut)
+│   │   ├── lobby/                   # Configuration du lobby
+│   │   │   ├── CyberSlider.tsx      # Curseur tactile avec aimant instantané vers les checkpoints
+│   │   │   └── Lobby.tsx            # Carte de configuration de room & presets
 │   │   ├── room/                    # Header (Partager, Détruire), panneau de chat, input
 │   │   ├── Footer.tsx               # Footer responsive et compact
 │   │   └── ToastProvider.tsx        # Configuration des toasts Sonner empilables
@@ -129,7 +131,7 @@ Welcome to the source code of **Temporis**. A truly ephemeral, anonymous, and ul
 | **Absolute Secrecy** | The AES key is generated in your browser and shared via the URL fragment anchor (`#key=...`). It is **never** transmitted to the server. |
 | **Real-Time Delivery** | WebSockets powered by Upstash Realtime for near-instant message delivery. |
 | **Auto-destruction & TTL** | Every room enforces a strict countdown (5, 15, or 30 min) visualized with a laser bar. Upon expiration, all room data is completely purged from Redis. |
-| **Tactile Duration Slider** | Custom interactive slider with discrete tactical step blocks (5, 15, 30 min), full hit-box clickability, and fluid progress fill. |
+| **Cyber Slider & Instant Magnetic Snap** | Smooth touch/mouse draggable slider (`CyberSlider`) with continuous tracking, pointer capture, instant quick-select buttons, and immediate magnetic snapping to the nearest checkpoint (5, 15, or 30 min) upon release. |
 | **10-Second Grace Period** | When a user closes their tab or refreshes (F5), a 10-second grace window is granted. If they do not return, a leave notification is broadcast and their seat is released in Redis. |
 | **Smart Teardown** | When both participants leave or explicitly trigger "Destroy", the room and its messages are **instantly deleted**. |
 | **Stacked Toast Notifications** | Clean Sonner toast integration that elegantly stacks notifications upon successive room events. |
@@ -179,7 +181,9 @@ Temporis/
 │   │   └── room/[roomId]/           # E2EE Chat room page
 │   ├── components/                  # UI Components
 │   │   ├── common/                  # Shared UI (BrandMark, LanguageSwitcher with SVG flags, Background)
-│   │   ├── lobby/                   # Room configuration (duration slider, status banner)
+│   │   ├── lobby/                   # Lobby configuration
+│   │   │   ├── CyberSlider.tsx      # Draggable tactile slider with instant magnetic checkpoint snap
+│   │   │   └── Lobby.tsx            # Room configuration card & duration presets
 │   │   ├── room/                    # Header (Share, Destroy), chat panel, composer
 │   │   ├── Footer.tsx               # Compact, responsive footer
 │   │   └── ToastProvider.tsx        # Stackable Sonner toast configuration
