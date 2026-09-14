@@ -41,15 +41,15 @@ export default function RoomEntryLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      {/* Page Content: fits natural content size without forcing flex-1 expansion on mobile */}
-      <div className='relative z-20 flex flex-1 flex-col items-center justify-start sm:justify-center px-4 pt-2.5 sm:pt-6 pb-2 sm:py-10 w-full'>
-        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg flex flex-col space-y-3 sm:space-y-6'>
+      {/* Page Content: spans full available vertical space between top header and bottom footer */}
+      <div className='relative z-20 flex flex-1 min-h-0 flex-col items-center justify-center px-3 sm:px-4 pt-2 sm:pt-6 pb-2 sm:py-8 w-full'>
+        <div className='w-full max-w-sm sm:max-w-md md:max-w-lg flex flex-col flex-1 min-h-0 space-y-2.5 sm:space-y-6'>
           {children}
         </div>
       </div>
 
-      {/* Footer on both mobile and desktop: sticks directly under the container on mobile */}
-      <div className='w-full mt-2 sm:mt-auto relative z-10 pb-20 sm:pb-0 shrink-0'>
+      {/* Footer on both mobile and desktop: placed directly under the container */}
+      <div className='w-full relative z-10 pb-20 sm:pb-0 shrink-0'>
         <Footer />
       </div>
     </main>

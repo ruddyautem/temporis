@@ -33,7 +33,7 @@ const JoinScreen = ({
   };
 
   return (
-    <div className='flex flex-col w-full font-mono gap-3 sm:gap-6'>
+    <div className='flex flex-col flex-1 w-full font-mono gap-3 sm:gap-6 min-h-0'>
       {/* Brand Header with invitation badge */}
       <BrandMark
         badge={
@@ -51,7 +51,7 @@ const JoinScreen = ({
       />
 
       {/* Cyberpunk Card matching Lobby exactly */}
-      <div className='border border-emerald-500/25 bg-[#0c1522]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative rounded-none overflow-hidden flex flex-col'>
+      <div className='border border-emerald-500/25 bg-[#0c1522]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative rounded-none overflow-hidden flex flex-col flex-1 min-h-0'>
         {/* Tactical Corner Accents */}
         <div className='absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-emerald-400/80 z-10' />
         <div className='absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-emerald-400/80 z-10' />
@@ -59,7 +59,7 @@ const JoinScreen = ({
         <div className='absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-emerald-400/80 z-10' />
 
         {/* Anonymous Identity Header */}
-        <div className='flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-3 sm:py-4 sm:px-6'>
+        <div className='flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-3 sm:py-4 sm:px-6 shrink-0'>
           <div className='flex items-center gap-3 min-w-0'>
             <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-none border border-emerald-500/30 bg-emerald-500/10 text-emerald-400'>
               <Icon name='user' className='h-4 w-4' />
@@ -93,9 +93,9 @@ const JoinScreen = ({
         </div>
 
         {/* Content Area */}
-        <div className='p-4 sm:p-8 flex flex-col gap-4 sm:gap-7'>
+        <div className='p-4 sm:p-8 flex flex-col flex-1 justify-between gap-4 sm:gap-7 min-h-0 overflow-y-auto'>
           {/* Main Encadré: cleanly wraps info on top and details at bottom */}
-          <div className='flex flex-col rounded-none border border-emerald-500/20 bg-emerald-950/15 p-3.5 sm:p-0 sm:border-0 sm:bg-transparent gap-4 sm:gap-7'>
+          <div className='flex flex-col flex-1 justify-between sm:justify-start rounded-none border border-emerald-500/20 bg-emerald-950/15 p-3.5 sm:p-0 sm:border-0 sm:bg-transparent gap-4 sm:gap-7'>
             {/* Info Container: single unified container on desktop, matching encadré on mobile */}
             <div className='rounded-none sm:border sm:border-emerald-500/20 sm:bg-emerald-950/15 sm:p-4 space-y-2.5 sm:space-y-3.5'>
               {/* Invitation / secure channel banner */}
@@ -133,7 +133,7 @@ const JoinScreen = ({
                 </span>
               </div>
 
-              <div className='flex items-center justify-between px-4 py-3.5 rounded-none border border-emerald-500/30 bg-[#0a1420] text-emerald-200'>
+              <div className='flex items-center justify-between px-4 py-3 sm:py-3.5 rounded-none border border-emerald-500/30 bg-[#0a1420] text-emerald-200'>
                 <span className='font-mono text-xs sm:text-sm font-bold tracking-widest truncate'>
                   {roomId}
                 </span>
