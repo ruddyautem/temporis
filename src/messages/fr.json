@@ -14,7 +14,7 @@
     "minutes": "Minutes",
     "roomInfo": "La room et ses messages seront automatiquement supprimés après {ttl} minutes. Aucun historique n'est conservé.",
     "roomInfoAutoDelete": "Suppression automatique après {ttl} minutes.",
-    "roomInfoNoHistory": "Aucun historique ni trace conservé.",
+    "roomInfoNoHistory": "Aucun historique n’est conservé.",
     "createButton": "Créer la room",
     "desktopCreateButton": "Créer la room sécurisée",
     "creating": "Création en cours...",

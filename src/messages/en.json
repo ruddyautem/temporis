@@ -14,7 +14,7 @@
     "minutes": "Minutes",
     "roomInfo": "The room and all its messages will be automatically deleted after {ttl} minutes. No logs or history are kept.",
     "roomInfoAutoDelete": "Auto-deleted after {ttl} minutes.",
-    "roomInfoNoHistory": "No history or traces kept.",
+    "roomInfoNoHistory": "No history is retained.",
     "createButton": "Create room",
     "desktopCreateButton": "Create secure room",
     "creating": "Creating room...",
