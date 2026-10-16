@@ -35,7 +35,7 @@ export default function RoomEntryLayout({ children }: { children: ReactNode }) {
           <div className='flex items-center z-50'>
             <LanguageSwitcher
               showFullText={true}
-              buttonClassName='flex items-center justify-center gap-1.5 px-3 py-1.5 border border-emerald-500/30 bg-[#0c1624] text-slate-200 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all cursor-pointer h-[32px] shadow-sm'
+              buttonClassName='flex items-center justify-center gap-1.5 px-3 py-1.5 border border-emerald-500/30 bg-[#0c1624] text-slate-200 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all cursor-pointer h-8 shadow-sm'
             />
           </div>
         </div>

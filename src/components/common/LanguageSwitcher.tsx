@@ -83,7 +83,7 @@ export default function LanguageSwitcher({
   };
 
   const defaultButtonClass =
-    "flex items-center justify-center gap-1.5 sm:gap-2 rounded-none border border-emerald-500/30 bg-[#0c1624] px-2.5 sm:px-3 py-1.5 text-xs text-slate-200 hover:border-emerald-400 hover:bg-emerald-500/10 transition-all cursor-pointer shadow-sm active:scale-95 h-[34px]";
+    "flex items-center justify-center gap-1.5 sm:gap-2 rounded-none border border-emerald-500/30 bg-[#0c1624] px-2.5 sm:px-3 py-1.5 text-xs text-slate-200 hover:border-emerald-400 hover:bg-emerald-500/10 transition-all cursor-pointer shadow-sm active:scale-95 h-8.5";
 
   return (
     <div className='relative inline-block text-left font-mono z-50' ref={dropdownRef}>

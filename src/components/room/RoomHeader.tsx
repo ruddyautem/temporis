@@ -43,7 +43,7 @@ const RoomHeader = ({
             onClick={onCopyLink}
             title={t("share")}
             aria-label={t("share")}
-            className='flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 border border-emerald-500/30 bg-[#0c1624] text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all active:scale-95 cursor-pointer h-[34px]'
+            className='flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 border border-emerald-500/30 bg-[#0c1624] text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all active:scale-95 cursor-pointer h-8.5'
           >
             <Icon name='share' className='w-3.5 h-3.5 text-emerald-400' />
             <span className='hidden sm:inline text-[10px] uppercase font-bold tracking-wider text-emerald-300'>
@@ -57,7 +57,7 @@ const RoomHeader = ({
             disabled={isDestroying}
             title={t("destroy")}
             aria-label={t("destroy")}
-            className='flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 border border-red-500/30 bg-[#160c10] text-red-400 hover:bg-red-500/20 hover:border-red-400 hover:text-red-300 transition-all active:scale-95 disabled:opacity-40 cursor-pointer h-[34px] shadow-sm'
+            className='flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 border border-red-500/30 bg-[#160c10] text-red-400 hover:bg-red-500/20 hover:border-red-400 hover:text-red-300 transition-all active:scale-95 disabled:opacity-40 cursor-pointer h-8.5 shadow-sm'
           >
             <Icon name='trash' className='w-3.5 h-3.5 text-red-400' />
             <span className='hidden sm:inline text-[10px] uppercase font-bold tracking-wider text-red-300'>
@@ -68,7 +68,7 @@ const RoomHeader = ({
           {/* Language Switcher */}
           <LanguageSwitcher
             showFullText={true}
-            buttonClassName='flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 border border-emerald-500/30 bg-[#0c1624] text-slate-200 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all cursor-pointer h-[34px] shadow-sm'
+            buttonClassName='flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 border border-emerald-500/30 bg-[#0c1624] text-slate-200 hover:bg-emerald-500/10 hover:border-emerald-400 transition-all cursor-pointer h-8.5 shadow-sm'
           />
         </div>
       </div>
