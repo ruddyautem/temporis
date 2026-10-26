@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, type RefObject } from "react";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 interface ChatComposerProps {
   inputRef: RefObject<HTMLInputElement | null>;
   isReady: boolean;
   isSending: boolean;
-  onSend: (text: string) => void;
+  onSend: (text: string) => Promise<void>;
 }
 
 const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProps) => {
@@ -15,11 +16,13 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
   const [input, setInput] = useState("");
   const canSend = isReady && input.trim().length > 0 && !isSending;
 
-  const submit = () => {
+  const submit = async () => {
     if (!canSend) return;
     const textToSend = input;
-    setInput("");
-    onSend(textToSend);
+    try {
+      await onSend(textToSend);
+      setInput(current => current === textToSend ? "" : current);
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Échec de l’envoi"); }
     // Keep focus on mobile/desktop without losing virtual keyboard
     inputRef.current?.focus();
   };
@@ -38,6 +41,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
           <input
             ref={inputRef}
             type='text'
+            aria-label={t("inputPlaceholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {

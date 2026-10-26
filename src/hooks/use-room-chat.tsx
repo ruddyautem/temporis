@@ -36,18 +36,22 @@ export const useRoomChat = (
       );
       return { messages: decrypted };
     },
+    refetchInterval: 10000,
     retry: false,
     enabled: !!cryptoKey,
   });
 
-  const { mutate: sendMessage, isPending } = useMutation({
+  const { mutateAsync: sendMessage, isPending } = useMutation({
     mutationFn: async ({ text }: { text: string }) => {
       if (!cryptoKey) throw new Error("No encryption key");
+      if (new TextEncoder().encode(text).length > 5000) throw new Error("Message trop long (5 000 octets maximum).");
       const encrypted = await encryptText(text, cryptoKey);
-      await client.messages.post(
+      const res = await client.messages.post(
         { sender: username || "Anonyme", text: encrypted },
         { query: { roomId } },
       );
+      if (res.error) throw new Error("Message non envoyé. Réessaie.");
+      await refetch();
     },
   });
 

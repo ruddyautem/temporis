@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/client";
 import type { RoomExitReason } from "./use-room-session";
+import type { MutableRefObject } from "react";
 
 /**
  * Polls the room's remaining TTL and ticks it down locally between polls,
@@ -11,6 +12,7 @@ import type { RoomExitReason } from "./use-room-session";
 export const useRoomCountdown = (
   roomId: string,
   onExpire: (reason: RoomExitReason) => void,
+  otherUsersCountRef?: MutableRefObject<number>,
 ) => {
   const storageKey = `temporis_ttl_${roomId}`;
 
@@ -49,10 +51,12 @@ export const useRoomCountdown = (
       return res.data;
     },
     refetchInterval: 10000,
+    refetchIntervalInBackground: true,
     retry: false,
   });
 
   useEffect(() => {
+    if (ttlData?.others !== undefined && otherUsersCountRef) otherUsersCountRef.current = ttlData.others;
     if (ttlData?.ttl !== undefined && ttlData.ttl !== lastSyncedValue.current) {
       setSecondsRemaining(ttlData.ttl);
       if (ttlData.initialTtl) {
@@ -68,7 +72,7 @@ export const useRoomCountdown = (
       } catch {}
       lastSyncedValue.current = ttlData.ttl;
     }
-  }, [ttlData, storageKey]);
+  }, [ttlData, storageKey, otherUsersCountRef]);
 
   const isRunning = secondsRemaining !== null;
   useEffect(() => {

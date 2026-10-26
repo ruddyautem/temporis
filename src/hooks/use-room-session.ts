@@ -24,7 +24,10 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
   useEffect(() => {
     if (!username || hasAnnouncedJoin.current) return;
     hasAnnouncedJoin.current = true;
-    client.room.join.post({ username }, { query: { roomId } }).catch(() => {});
+    client.room.join.post({ username }, { query: { roomId } }).then(res => {
+      if (res.error) toast.error("Connexion à la room impossible.");
+      else if (res.data && "others" in res.data) otherUsersCountRef.current = res.data.others ?? 0;
+    }).catch(() => toast.error("Connexion à la room impossible."));
   }, [username, roomId]);
 
   /** Redirect away from a room that no longer exists / errored / is full. */
@@ -33,7 +36,7 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
       if (hasExited.current) return;
       hasExited.current = true;
 
-      if (username) {
+      if (username && reason !== "destroyed") {
         client.room.leave.post({ username }, { query: { roomId } }).catch(() => {});
       }
 
@@ -55,9 +58,6 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
     if (username) {
       client.room.leave.post({ username }, { query: { roomId } }).catch(() => {});
     }
-    if (isAlone) {
-      client.room.delete(null, { query: { roomId } }).catch(() => {});
-    }
 
     router.replace(isAlone ? "/?destroyed=true" : "/");
   }, [username, roomId, router]);
@@ -65,7 +65,18 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
   /** Explicit "Détruire" button — deletes the room outright, for everyone. */
   const { mutate: destroyRoom, isPending: isDestroying } = useMutation({
     mutationFn: async () => {
-      await client.room.delete(null, { query: { roomId } });
+      if (hasExited.current) return "destroyed" as const;
+      const res = await client.room.delete(null, { query: { roomId } });
+      // A successful DELETE is the source of truth; realtime delivery is optional.
+      // An expired membership exits safely without claiming the deletion succeeded.
+      if (res.error) {
+        if (res.status === 401 || res.status === 404) return "error" as const;
+        throw new Error("Deletion failed");
+      }
+      return "destroyed" as const;
+    },
+    onSuccess: (reason) => {
+      handleExit(reason);
     },
     onError: () => {
       toast.error("Échec de la fermeture de la room.");

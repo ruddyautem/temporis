@@ -58,7 +58,7 @@ const Page = () => {
     isDestroying,
   } = useRoomSession(roomId, username);
 
-  const { secondsRemaining, initialSeconds } = useRoomCountdown(roomId, handleExit);
+  const { secondsRemaining, initialSeconds } = useRoomCountdown(roomId, handleExit, otherUsersCountRef);
 
   const { isLoading, displayMessages, sendMessage, isSending, inputRef } =
     useRoomChat(roomId, username, handleExit, otherUsersCountRef, cryptoKey);
@@ -146,7 +146,7 @@ const Page = () => {
           >
             <ChatComposer
               inputRef={inputRef}
-              isReady={isClient}
+              isReady={isClient && !!cryptoKey}
               isSending={isSending}
               onSend={(text) => sendMessage({ text })}
             />

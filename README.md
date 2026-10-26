@@ -12,14 +12,14 @@
 
 ### 📋 Présentation
 
-Bienvenue sur le code source de **Temporis**. Une application de messagerie véritablement éphémère, anonyme et ultra-sécurisée. L'idée : un espace d'échange où aucun message en clair ne touche jamais un serveur, et où tout s'autodétruit dès la fin de la conversation. Le résultat est Temporis : un chat chiffré de bout en bout (E2EE) avec une expérience soignée, tactile et réactive.
+Bienvenue sur le code source de **Temporis**. Une application de messagerie éphémère, pseudonyme et chiffrée côté navigateur. L'idée : un espace d'échange où aucun message en clair ne touche jamais un serveur, et où tout s'autodétruit dès la fin de la conversation. Le résultat est Temporis : un chat chiffré de bout en bout (E2EE) avec une expérience soignée, tactile et réactive.
 
 ### 📑 Les fonctionnalités
 
 | Fonctionnalité | Ce que ça fait sous le capot |
 | --- | --- |
 | **Chiffrement E2EE** | L'API Web Crypto (`AES-GCM` 256-bit) chiffre et déchiffre les messages côté client. Le serveur ne relaie que des paquets illisibles. |
-| **Secret Absolu** | La clé AES est générée dans le navigateur et transmise via le fragment d'URL (`#key=...`). Elle n'est **jamais** envoyée au serveur. |
+| **Clé côté navigateur** | La clé AES est générée dans le navigateur et transmise via le fragment d'URL (`#key=...`). Elle n'est **jamais** envoyée au serveur. |
 | **Temps Réel** | WebSockets alimentés par Upstash Realtime pour une latence minimale. |
 | **Autodestruction & TTL** | Chaque room dispose d'un compte à rebours strict (5, 15 ou 30 min) matérialisé par une jauge laser. À expiration, toutes les données sont purgées de Redis. |
 | **Cyber Slider & Aimant Instantané** | Curseur tactile et souris fluide avec déplacement continu (`CyberSlider`), capture de pointeur, boutons de présélection instantanés et magnétisme immédiat (*magnetic snap*) vers le checkpoint le plus proche (5, 15 ou 30 min) dès le relâchement. |
@@ -36,7 +36,7 @@ L'architecture technique est conçue pour garantir une confidentialité maximale
 - **AES-256-GCM** : Clé symétrique générée via `crypto.subtle.generateKey` et sérialisée en Base64URL sécurisé dans l'ancre d'URL (`#key=...`).
 - **IV Aléatoire unique** : Chaque message génère un vecteur d'initialisation (12 octets) aléatoire distinct.
 - **Contrôle d'accès strict** : Le middleware backend (`proxy.ts` et Elysia `authMiddleware`) distribue des jetons sous forme de cookies HttpOnly `SameSite=Strict` limitant l'accès à la room strictement à 2 personnes simultanées.
-- **Zéro fuite de données** : Les messages en clair ne sont jamais enregistrés en base ni loggés sur le serveur.
+- **Messages chiffrés côté client** : Les messages en clair ne sont jamais enregistrés en base ni loggés sur le serveur.
 
 ### 🛠 Stack technique
 
@@ -223,3 +223,19 @@ Navigate to [http://localhost:3000](http://localhost:3000).
 ### About Me
 
 I'm Ruddy Autem, a Full Stack developer. If you enjoy the project or want to connect, feel free to visit [autem.dev](https://autem.dev) or [GitHub](https://github.com/ruddyautem).
+
+
+## Présence, accès et limites
+
+L’admission et les départs sont atomiques dans Redis. Un participant renouvelle un bail de présence de 2 minutes par le heartbeat ; un déchargement de page reçu réduit son bail à 10 secondes pour permettre un rafraîchissement. Si l’onglet ou l’OS s’arrête sans envoyer le départ, l’expiration Redis prend le relais sans minuteur serveur. L’échéance choisie de 5, 15 ou 30 minutes reste un plafond absolu. Les clés de métadonnées, présence, messages et stream partagent cette expiration. L’émission d’événement fixe la rétention atomiquement et une destruction ne recrée aucun stream. Un départ silencieux se reflète au prochain heartbeat ; aucune notification immédiate n’est garantie sans serveur actif.
+
+Chaque abonnement temps réel vérifie l’appartenance au salon ; une connexion déjà ouverte est revérifiée avant chaque événement. Le compteur client n’autorise jamais la destruction automatique d’un autre participant. Les envois échoués conservent le texte. La limite côté client est de 5 000 octets UTF-8, et le serveur accepte l’enveloppe chiffrée correspondante. La room accepte 1 000 messages, sans effacer l’historique pour libérer de la place ; un nouveau salon est nécessaire ensuite. La création est limitée globalement à 1 000 salons par heure dans Redis ; adapter ce budget et le filtrage de l’hébergeur selon le trafic.
+
+Le serveur voit les pseudonymes, horaires, identifiants de salon et paquets chiffrés. Le chiffrement côté client et le TTL ne garantissent pas l’absence de logs d’infrastructure, de sauvegardes du fournisseur ou de copies réalisées par les participants. Ne pas envoyer de messages en clair à cette API depuis un client modifié ; le serveur peut vérifier la forme de l’enveloppe, pas prouver le chiffrement sans posséder la clé.
+
+Tests : bun run test. Les tests de présence exécutent le Lua avec ioredis-mock ; la sérialisation cjson absente du simulateur est simulée uniquement dans ces tests. Vérifier les mêmes courses d’accès et expirations sur un Redis de staging avant publication.
+
+
+### Régression Node / fermeture de salon
+
+Le point d’entrée temps réel lit le cookie sur les en-têtes de la requête reçue et ne reconstruit pas un NextRequest à partir du proxy Next.js. Après une suppression confirmée, le client revient directement au lobby. La notification des autres participants est exécutée après la réponse avec `after` ; son échec ne remet pas en cause la suppression. Le test `bun run test:node` reproduit les conditions du proxy sous Node, en complément de `bun run test`.
