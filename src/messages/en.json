@@ -36,7 +36,29 @@
     "cardTtlTitle": "LIFECYCLE",
     "cardTtlBadge": "{ttl} MINUTES TIMER",
     "cardTtlDesc": "The room and all its contents vanish automatically once the timer expires.",
-    "readyToDeploy": "Ready to launch a secure, temporary private room"
+    "readyToDeploy": "Ready to launch a secure, temporary private room",
+    "heroDescription": "One link. Two people. A conversation that disappears.",
+    "panelCreate": "Create a private room",
+    "panelAbout": "Conversations, in passing.",
+    "duration5": "Express",
+    "duration15": "Standard",
+    "duration30": "Chill",
+    "inviteHint": "Create your room, then share the link with the other person.",
+    "manifestoLabel": "Private by default",
+    "manifestoTitle": "Time to connect.",
+    "manifestoAccent": "Then it all disappears.",
+    "manifestoDescription": "A space for two, with no account to create. Choose a duration, share your link and enjoy the conversation.",
+    "anonymousTitle": "NO SIGN-UP",
+    "anonymousDescription": "A pseudonym is generated for you. No email address or profile to fill in.",
+    "privacyDescription": "When the room closes or expires, messages are deleted. No conversation history is kept.",
+    "protocolLabel": "Encrypted in your browser",
+    "stepsLabel": "How it works",
+    "stepCreate": "Create your room",
+    "stepShare": "Share the link",
+    "stepDisappear": "Everything is deleted automatically",
+    "chooseTime": "Time for your conversation",
+    "timeCaption": "Then the room and its messages disappear.",
+    "autoDeleteLabel": "Automatic deletion"
   },
   "Status": {
     "destroyed": "This room has been destroyed.",
@@ -65,7 +87,15 @@
     "cardLifeDesc": "As soon as the host leaves or the countdown expires, everything is permanently erased.",
     "cardTraceTitle": "PRIVACY",
     "cardTraceBadge": "ZERO HISTORY",
-    "cardTraceDesc": "Nothing is recorded. All messages disappear without leaving a trace."
+    "cardTraceDesc": "Nothing is recorded. All messages disappear without leaving a trace.",
+    "sessionHint": "This link gives you access to this private conversation.",
+    "welcomeTitle": "An invitation to talk.",
+    "welcomeAccent": "Just between you.",
+    "welcomeDescription": "Your pseudonym is ready. Join the other person in a temporary space, with no account to create.",
+    "lifetimeDescription": "The countdown has already started. The room and its messages are deleted when it expires.",
+    "privacyDescription": "When the room closes or expires, messages are deleted. No conversation history is kept.",
+    "invitationTitle": "A conversation awaits.",
+    "ephemeralLabel": "Temporary messages, no conversation history"
   },
   "Room": {
     "selfDestruct": "Self-destruct",
@@ -100,6 +130,19 @@
     "channelStatusEndingSoon": "EXPIRATION SOON // {time}",
     "channelStatusActive": "CHANNEL ACTIVE // {time}",
     "emptyStateTitle": "SECURE CHANNEL ACTIVE",
-    "emptyStateSub": "END-TO-END ENCRYPTION · ZERO HISTORY · EPHEMERAL"
+    "emptyStateSub": "END-TO-END ENCRYPTION · ZERO HISTORY · EPHEMERAL",
+    "conversationTitle": "Conversation",
+    "identityLabel": "Your identity",
+    "emptyTitle": "It starts with a message.",
+    "emptyDescription": "Invite the other person using Share, then start the conversation.",
+    "composerHint": "End-to-end encryption · No conversation history",
+    "inviteCopiedTitle": "Link copied, ready to share.",
+    "inviteCopiedDescription": "Send it to the other person to start your conversation.",
+    "linkCopyFailed": "Could not copy the link. Try the Share button again.",
+    "participantLeftBadge": "Participant disconnected",
+    "participantLeftTitle": "Your partner has left the conversation.",
+    "participantLeftName": "{username} has left the room.",
+    "participantLeftDescription": "The spot is available again. Copy the link to invite someone else, or destroy the room and its messages.",
+    "participantLeftCopy": "Copy link and stay"
   }
 }

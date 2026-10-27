@@ -36,7 +36,29 @@
     "cardTtlTitle": "CYCLE DE VIE",
     "cardTtlBadge": "{ttl} MINUTES CHRONO",
     "cardTtlDesc": "La room et tout son contenu s'effacent automatiquement dès que le compte à rebours expire.",
-    "readyToDeploy": "Prêt à ouvrir une room privée sécurisée et éphémère"
+    "readyToDeploy": "Prêt à ouvrir une room privée sécurisée et éphémère",
+    "heroDescription": "Un lien. Deux personnes. Une conversation qui s’efface.",
+    "panelCreate": "Créer une room privée",
+    "panelAbout": "Vos échanges, de passage.",
+    "duration5": "Express",
+    "duration15": "Standard",
+    "duration30": "Chill",
+    "inviteHint": "Créez la room, puis partagez le lien avec votre interlocuteur.",
+    "manifestoLabel": "La confidentialité par défaut",
+    "manifestoTitle": "Le temps d’échanger.",
+    "manifestoAccent": "Puis tout disparaît.",
+    "manifestoDescription": "Un espace à deux, sans compte à créer. Choisissez une durée, partagez votre lien et profitez de la conversation.",
+    "anonymousTitle": "SANS INSCRIPTION",
+    "anonymousDescription": "Un pseudonyme est généré pour vous. Ni adresse e-mail, ni profil à remplir.",
+    "privacyDescription": "À la fermeture de la room ou à son expiration, les messages sont supprimés. Aucun historique de conversation.",
+    "protocolLabel": "Chiffré côté navigateur",
+    "stepsLabel": "Comment ça marche",
+    "stepCreate": "Créez votre room",
+    "stepShare": "Partagez le lien",
+    "stepDisappear": "Tout s’efface automatiquement",
+    "chooseTime": "Votre temps d’échange",
+    "timeCaption": "Puis la room et ses messages disparaissent.",
+    "autoDeleteLabel": "Suppression automatique"
   },
   "Status": {
     "destroyed": "Cette room a été détruite.",
@@ -65,7 +87,15 @@
     "cardLifeDesc": "Dès que le créateur quitte la room ou que le compte à rebours expire, tout est supprimé définitivement.",
     "cardTraceTitle": "CONFIDENTIALITÉ",
     "cardTraceBadge": "ZÉRO HISTORIQUE",
-    "cardTraceDesc": "Rien n'est enregistré. Tous les échanges disparaissent sans laisser de trace."
+    "cardTraceDesc": "Rien n'est enregistré. Tous les échanges disparaissent sans laisser de trace.",
+    "sessionHint": "Le lien vous donne accès à cette conversation privée.",
+    "welcomeTitle": "Une invitation à parler.",
+    "welcomeAccent": "En toute discrétion.",
+    "welcomeDescription": "Votre pseudonyme est prêt. Rejoignez votre interlocuteur dans un espace éphémère, sans compte à créer.",
+    "lifetimeDescription": "Le compte à rebours a déjà commencé. La room et ses messages sont supprimés à son expiration.",
+    "privacyDescription": "À la fermeture ou à l’expiration de la room, les messages sont supprimés. Aucun historique de conversation.",
+    "invitationTitle": "Une conversation vous attend.",
+    "ephemeralLabel": "Messages éphémères, sans historique"
   },
   "Room": {
     "selfDestruct": "Autodestruction",
@@ -100,6 +130,19 @@
     "channelStatusEndingSoon": "EXPIRATION PROCHE // {time}",
     "channelStatusActive": "ROOM ACTIVE // {time}",
     "emptyStateTitle": "ROOM SÉCURISÉE ACTIVE",
-    "emptyStateSub": "CHIFFREMENT DE BOUT EN BOUT · ZÉRO HISTORIQUE · ÉPHÉMÈRE"
+    "emptyStateSub": "CHIFFREMENT DE BOUT EN BOUT · ZÉRO HISTORIQUE · ÉPHÉMÈRE",
+    "conversationTitle": "Conversation",
+    "identityLabel": "Votre identité",
+    "emptyTitle": "Tout commence par un message.",
+    "emptyDescription": "Invitez votre interlocuteur avec le bouton Partager, puis commencez la conversation.",
+    "composerHint": "Chiffrement de bout en bout · Aucun historique",
+    "inviteCopiedTitle": "Lien copié, prêt à partager.",
+    "inviteCopiedDescription": "Envoyez-le à votre interlocuteur pour commencer la conversation.",
+    "linkCopyFailed": "Impossible de copier le lien. Réessayez avec le bouton Partager.",
+    "participantLeftBadge": "Participant déconnecté",
+    "participantLeftTitle": "Votre interlocuteur a quitté la conversation.",
+    "participantLeftName": "{username} a quitté la room.",
+    "participantLeftDescription": "La place est de nouveau libre. Copiez le lien pour inviter quelqu’un d’autre, ou détruisez la room et ses messages.",
+    "participantLeftCopy": "Copier le lien et rester"
   }
 }

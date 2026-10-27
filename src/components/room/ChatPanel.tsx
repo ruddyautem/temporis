@@ -4,12 +4,17 @@ import { forwardRef, useState, useEffect } from "react";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { formatCountdown } from "@/lib/countdown-format";
+import { Icon } from "@/components/Icons";
 import type { ChatMessage } from "@/types/chat";
 
 interface ChatPanelProps {
+  onCopyLink: () => void;
+  onDestroy: () => void;
+  isDestroying?: boolean;
   isLoading: boolean;
   messages: ChatMessage[];
   currentUsername: string | undefined;
+  inviteCopied?: boolean;
   scrollAnchorRef: React.RefObject<HTMLDivElement | null>;
   hasNewMessage: boolean;
   onJumpToBottom: () => void;
@@ -33,7 +38,7 @@ const MessageBubble = ({ msg, isOwn, youLabel }: { msg: ChatMessage; isOwn: bool
   }
 
   return (
-    <div className='flex justify-start w-full py-1'>
+    <div className={isOwn ? "room-message room-message-own" : "room-message"}>
       <div className='w-full max-w-[96%] sm:max-w-[88%] md:max-w-[82%]'>
         {/* Header: Colored accent bar + Pseudo + (vous) + Heure */}
         <div className='mb-1 flex items-center gap-2 select-none'>
@@ -74,9 +79,13 @@ const MessageBubble = ({ msg, isOwn, youLabel }: { msg: ChatMessage; isOwn: bool
 const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
   (
     {
+      onCopyLink,
+      onDestroy,
+      isDestroying,
       isLoading,
       messages,
       currentUsername,
+      inviteCopied = false,
       scrollAnchorRef,
       hasNewMessage,
       onJumpToBottom,
@@ -158,18 +167,21 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
     }, [secondsRemaining, hasAnimated]);
 
     return (
-      <div className='relative flex-1 min-h-0 font-mono flex flex-col px-2 sm:px-4 md:px-6 py-2 sm:py-3'>
-        <div className='relative flex-1 min-h-0 w-full max-w-5xl mx-auto rounded-none border border-emerald-500/30 bg-[#09111b]/85 backdrop-blur-md flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.6)]'>
-          {/* Crisp tactical cyber corner notches */}
-          <div className='absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-emerald-400 z-20 pointer-events-none' />
-          <div className='absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-emerald-400 z-20 pointer-events-none' />
-          <div className='absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l border-emerald-400 z-20 pointer-events-none' />
-          <div className='absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-emerald-400 z-20 pointer-events-none' />
+      <div className='room-chat-column relative flex-1 min-h-0 font-mono flex flex-col'>
+        <div className='room-chat-frame terminal-frame relative flex-1 min-h-0 w-full mx-auto rounded-none border border-emerald-500/30 bg-[#09111b]/85 backdrop-blur-md flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.6)]'>
+          <div className="room-conversation-heading">
+            <h1><Icon name="lock" className="h-4 w-4 text-emerald-400" />{t("conversationTitle")}</h1>
+            <div className="room-conversation-actions">
+              <div className="room-action room-identity-badge"><Icon name="user" className="h-3.5 w-3.5 shrink-0" /><span className="room-identity-name">{currentUsername}</span></div>
+              <button type="button" onClick={onCopyLink} className="room-action"><Icon name="share" className="h-3.5 w-3.5 shrink-0" /><span>{t("share")}</span></button>
+              <button type="button" onClick={onDestroy} disabled={isDestroying} className="room-action room-action-danger"><Icon name="trash" className="h-3.5 w-3.5 shrink-0" /><span>{t("destroy")}</span></button>
+            </div>
+          </div>
 
           {/* Top Intelligent Telemetry & Life-Line Strip */}
           <div
             suppressHydrationWarning
-            className='border-b border-slate-800/80 bg-[#070e17]/95 px-3.5 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between gap-3 text-[10px] uppercase select-none relative z-10'
+            className='room-telemetry border-b border-slate-800/80 bg-[#070e17]/95 px-3.5 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between gap-3 text-[10px] uppercase select-none relative z-10'
           >
             {/* Left: Live status beacon synced in color with stateTheme */}
             <div className='flex items-center gap-2.5 min-w-0'>
@@ -220,14 +232,14 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
           {/* Messages scroll feed */}
           <div
             ref={containerRef}
-            className='flex-1 min-h-0 overflow-y-auto px-3.5 py-4 sm:px-6 sm:py-5 w-full overscroll-contain touch-pan-y'
+            className='room-message-feed flex-1 min-h-0 overflow-y-auto px-3.5 py-4 sm:px-6 sm:py-5 w-full overscroll-contain touch-pan-y'
           >
             {isLoading ? (
               <div className='flex h-full items-center justify-center text-emerald-400/70 text-[11px] md:text-[12px] uppercase tracking-widest animate-pulse'>
                 {t("searchingSignal")}
               </div>
             ) : messages.length === 0 ? (
-              <div className='flex flex-col h-full items-center justify-center text-center px-4 select-none opacity-60'>
+              <div className='room-empty flex flex-col h-full items-center justify-center text-center px-4 select-none'>
                 <div className='relative p-3 border border-emerald-500/30 bg-emerald-500/[0.04] mb-3 rounded-none'>
                   {/* 4 crisp tactical cyber corners */}
                   <div className='absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-emerald-400 pointer-events-none' />
@@ -253,9 +265,7 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
                     </span>
                   </div>
                 </div>
-                <p className='text-slate-400 text-xs tracking-wide max-w-sm'>
-                  {t("emptyStateSub")}
-                </p>
+                <h2>{t(inviteCopied ? "inviteCopiedTitle" : "emptyTitle")}</h2><p>{t(inviteCopied ? "inviteCopiedDescription" : "emptyDescription")}</p>
               </div>
             ) : (
               <div className='flex flex-col min-h-full space-y-3 sm:space-y-3.5'>

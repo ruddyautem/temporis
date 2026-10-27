@@ -14,25 +14,7 @@ export default function JoinPage() {
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
-    // Prefetch room TTL so the timer laser bar has the exact remaining time immediately upon entering
-    if (roomId) {
-      import("@/lib/client").then(({ client }) => {
-        client.room.ttl.get({ query: { roomId } }).then((res) => {
-          if (res.data?.ttl !== undefined) {
-            try {
-              sessionStorage.setItem(
-                `temporis_ttl_${roomId}`,
-                JSON.stringify({ ttl: res.data.ttl, timestamp: Date.now() })
-              );
-              if (res.data.initialTtl) {
-                sessionStorage.setItem(`temporis_ttl_${roomId}_initial`, String(res.data.initialTtl));
-              }
-            } catch {}
-          }
-        }).catch(() => {});
-      });
-    }
-  }, [roomId]);
+  }, []);
 
   if (!isMounted) {
     return (
@@ -45,7 +27,6 @@ export default function JoinPage() {
   return (
     <JoinScreen
       username={username}
-      roomId={roomId}
       onRegenerateUsername={regenerateUsername}
       onJoin={() => router.push(`/room/${roomId}${window.location.hash}`)}
       onDecline={() => router.push("/")}

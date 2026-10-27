@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 let completeRequest, navigations, errors, onNavigation, onError;
 mock.module('next/navigation',()=>({useRouter:()=>({replace:url=>{navigations.push(url);onNavigation?.();}})}));
-mock.module('@/lib/client',()=>({client:{room:{delete:()=>new Promise(resolve=>{completeRequest=resolve;}),leave:{post:async()=>({})}}}}));
+mock.module('@/lib/client',()=>({createRoomConnection:id=>({id,api:{room:{delete:()=>new Promise(resolve=>{completeRequest=resolve;}),leave:{post:async()=>({})}}}})}));
 mock.module('sonner',()=>({toast:{dismiss(){},error:message=>{errors.push(message);onError?.();}}}));
 const {useRoomSession}=await import('./use-room-session');
 
@@ -13,7 +13,7 @@ function setup() {
   navigations=[];errors=[];onNavigation=undefined;onError=undefined;
   let session;
   const queryClient=new QueryClient({defaultOptions:{mutations:{retry:false}}});
-  function Probe(){session=useRoomSession('r'.repeat(21),'Fixture');return React.createElement('div');}
+  function Probe(){session=useRoomSession('r'.repeat(21),'Fixture','g'.repeat(21));return React.createElement('div');}
   renderToString(React.createElement(QueryClientProvider,{client:queryClient},React.createElement(Probe)));
   return {session,queryClient};
 }

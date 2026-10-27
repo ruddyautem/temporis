@@ -28,7 +28,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
   };
 
   return (
-    <div className='border-t border-emerald-500/20 px-3 py-2.5 sm:px-5 sm:py-3 bg-[#08101a]/95 shrink-0 font-mono'>
+    <div className='room-composer border-t border-emerald-500/20 px-3 py-2.5 sm:px-5 sm:py-3 bg-[#08101a]/95 shrink-0 font-mono'>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -36,7 +36,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
         }}
         className='flex items-center gap-2 md:gap-3 w-full'
       >
-        <div className='relative flex-1 flex items-center'>
+        <div className='relative min-w-0 flex-1 flex items-center'>
           <span className='absolute left-3 text-emerald-400 font-bold select-none text-xs sm:text-sm'>&gt;</span>
           <input
             ref={inputRef}
@@ -63,6 +63,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
             e.preventDefault();
           }}
           title={t("send")}
+          aria-label={t("send")}
           className='group flex items-center justify-center gap-1.5 cursor-pointer rounded-none bg-emerald-500 border border-emerald-400 px-4 py-2.5 sm:py-3 text-slate-950 font-bold transition-all hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
         >
           <span className='hidden sm:inline text-[11px] uppercase tracking-wider'>{t("send")}</span>
@@ -71,6 +72,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
           </svg>
         </button>
       </form>
+      <p className="room-composer-hint">{t("composerHint")}</p>
     </div>
   );
 };

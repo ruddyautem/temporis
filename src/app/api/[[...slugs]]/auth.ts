@@ -10,13 +10,13 @@ class AuthError extends Error {
 
 export const authMiddleware = new Elysia({ name: "auth" })
   .error({ AuthError })
-  .onError(({ code, set }) => {
+  .onError({ as: "scoped" }, ({ code, set }) => {
     if (code === "AuthError") {
       set.status = 401;
       return { error: "Unauthorized" };
     }
   })
-  .derive({ as: "scoped" }, async ({ query, cookie }) => {
+  .derive({ as: "scoped" }, async ({ query, cookie, headers }) => {
     const roomId = query.roomId;
     const token = cookie["x-auth-token"]?.value as string | undefined;
 
@@ -24,8 +24,9 @@ export const authMiddleware = new Elysia({ name: "auth" })
       throw new AuthError("Missing roomId or token.");
     }
 
-    if (!(await isRoomMember(roomId, token))) {
+    const connectionId = headers["x-room-connection"] || query.connectionId;
+    if (!(await isRoomMember(roomId, token, connectionId))) {
       throw new AuthError("Invalid token.");
     }
-    return { auth: { roomId, token } };
+    return { auth: { roomId, token, connectionId: connectionId! } };
   });

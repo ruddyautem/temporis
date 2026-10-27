@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/client";
+import type { RoomConnection } from "@/lib/client";
+import { PRESENCE_HEARTBEAT_MS } from "@/lib/room-presence-config";
 import type { RoomExitReason } from "./use-room-session";
 import type { MutableRefObject } from "react";
 
@@ -11,9 +12,12 @@ import type { MutableRefObject } from "react";
  */
 export const useRoomCountdown = (
   roomId: string,
+  connection: RoomConnection,
+  isConnected: boolean,
   onExpire: (reason: RoomExitReason) => void,
   otherUsersCountRef?: MutableRefObject<number>,
 ) => {
+  const client = connection.api;
   const storageKey = `temporis_ttl_${roomId}`;
 
   const [secondsRemaining, setSecondsRemaining] = useState<number | null>(() => {
@@ -45,12 +49,15 @@ export const useRoomCountdown = (
   const lastSyncedValue = useRef<number | undefined>(undefined);
 
   const { data: ttlData } = useQuery({
-    queryKey: ["ttl", roomId],
+    queryKey: ["ttl", roomId, connection.id],
     queryFn: async () => {
       const res = await client.room.ttl.get({ query: { roomId } });
+      if (res.error && (res.status === 401 || res.status === 404)) { onExpire("error"); return null; }
+      if (res.error || !res.data || !("ttl" in res.data)) throw new Error("Room heartbeat unavailable");
       return res.data;
     },
-    refetchInterval: 10000,
+    enabled: isConnected,
+    refetchInterval: PRESENCE_HEARTBEAT_MS,
     refetchIntervalInBackground: true,
     retry: false,
   });
@@ -84,8 +91,8 @@ export const useRoomCountdown = (
   }, [isRunning]);
 
   useEffect(() => {
-    if (secondsRemaining === 0) onExpire("destroyed");
-  }, [secondsRemaining, onExpire]);
+    if (isConnected && ttlData && secondsRemaining === 0) onExpire("destroyed");
+  }, [secondsRemaining, onExpire, isConnected, ttlData]);
 
   return { secondsRemaining, initialSeconds };
 };

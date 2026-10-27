@@ -15,3 +15,7 @@ const getBaseUrl = () => {
 
 // Initialize Eden client
 export const client = treaty<typeof app>(getBaseUrl()).api;
+export function createRoomConnection(id: string) {
+  return { id, api: treaty<typeof app>(getBaseUrl(), { headers: { "x-room-connection": id } }).api };
+}
+export type RoomConnection = ReturnType<typeof createRoomConnection>;

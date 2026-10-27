@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { client } from "@/lib/client";
+import { createRoomConnection } from "@/lib/client";
+import { PRESENCE_HEARTBEAT_MS } from "@/lib/room-presence-config";
+import { watchRoomPageLifecycle } from "@/lib/room-page-lifecycle";
 
 export type RoomExitReason = "destroyed" | "error" | "full";
 
@@ -12,23 +14,15 @@ export type RoomExitReason = "destroyed" | "error" | "full";
  * exit paths (tab close, back button) that need special handling because
  * closing the last tab in an empty room should delete it.
  */
-export const useRoomSession = (roomId: string, username: string | undefined) => {
+export const useRoomSession = (roomId: string, username: string | undefined, connectionId: string) => {
   const router = useRouter();
+  const connection = useMemo(() => createRoomConnection(connectionId), [connectionId]);
+  const client = connection.api;
+  const [isConnected, setIsConnected] = useState(false);
 
   const hasExited = useRef(false);
-  const hasAnnouncedJoin = useRef(false);
   const otherUsersCountRef = useRef(0);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
-
-  // Announce presence once we know our username.
-  useEffect(() => {
-    if (!username || hasAnnouncedJoin.current) return;
-    hasAnnouncedJoin.current = true;
-    client.room.join.post({ username }, { query: { roomId } }).then(res => {
-      if (res.error) toast.error("Connexion à la room impossible.");
-      else if (res.data && "others" in res.data) otherUsersCountRef.current = res.data.others ?? 0;
-    }).catch(() => toast.error("Connexion à la room impossible."));
-  }, [username, roomId]);
 
   /** Redirect away from a room that no longer exists / errored / is full. */
   const handleExit = useCallback(
@@ -45,7 +39,7 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
       else if (reason === "full") router.replace("/?error=room-full");
       else router.replace("/?error=room-not-found");
     },
-    [router, username, roomId],
+    [router, username, roomId, client],
   );
 
   /** User explicitly clicked "leave" (after confirming, if they were alone). */
@@ -60,7 +54,7 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
     }
 
     router.replace(isAlone ? "/?destroyed=true" : "/");
-  }, [username, roomId, router]);
+  }, [username, roomId, router, client]);
 
   /** Explicit "Détruire" button — deletes the room outright, for everyone. */
   const { mutate: destroyRoom, isPending: isDestroying } = useMutation({
@@ -83,43 +77,44 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
     },
   });
 
-  // Tab close / refresh: leave the room.
-  // Using fetch keepalive (with credentials: 'include') so cookies are guaranteed to be sent
-  // across all modern browsers.
+  // Each document has its own server-issued generation. Requests from the
+  // outgoing document can never shorten or renew the refreshed document's slot.
   useEffect(() => {
     if (!username) return;
-
-    let tabCloseFired = false;
-    const handleTabClose = () => {
-      if (tabCloseFired) return;
-      tabCloseFired = true;
-
-      const url = `/api/room/leave?roomId=${encodeURIComponent(roomId)}&unload=true`;
-      const data = JSON.stringify({ username });
-
+    let cancelled = false;
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    const join = async () => {
       try {
-        fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: data,
-          keepalive: true,
-          credentials: "include",
-        }).catch(() => {});
+        const response = await client.room.join.post({ username }, { query: { roomId } });
+        if (cancelled) return;
+        if (!response.error && response.data && "others" in response.data) {
+          otherUsersCountRef.current = response.data.others ?? 0;
+          setIsConnected(true);
+        } else if (response.status === 401 || response.status === 404) {
+          handleExit("error");
+        } else retry = setTimeout(join, PRESENCE_HEARTBEAT_MS);
       } catch {
-        if (navigator.sendBeacon) {
-          const blob = new Blob([data], { type: "application/json" });
-          navigator.sendBeacon(url, blob);
-        }
+        if (!cancelled) retry = setTimeout(join, PRESENCE_HEARTBEAT_MS);
       }
     };
+    void join();
+    return () => { cancelled = true; clearTimeout(retry); };
+  }, [client, roomId, username, handleExit]);
 
-    window.addEventListener("beforeunload", handleTabClose);
-    window.addEventListener("pagehide", handleTabClose);
-    return () => {
-      window.removeEventListener("beforeunload", handleTabClose);
-      window.removeEventListener("pagehide", handleTabClose);
-    };
-  }, [username, roomId]);
+  useEffect(() => {
+    if (!username) return;
+    return watchRoomPageLifecycle(() => {
+      if (hasExited.current) return;
+      const query = new URLSearchParams({ roomId, connectionId, unload: "true" });
+      const url = `/api/room/leave?${query}`;
+      const body = JSON.stringify({ username });
+      // Beacon survives document teardown. The server checks the generation in
+      // the query because sendBeacon cannot attach a custom request header.
+      let sent = false;
+      try { sent = navigator.sendBeacon(url, new Blob([body], { type: "application/json" })); } catch {}
+      if (!sent) void fetch(url, { method: "POST", body, headers: { "Content-Type": "application/json" }, credentials: "same-origin", keepalive: true }).catch(() => {});
+    }, () => window.location.reload());
+  }, [username, roomId, connectionId]);
 
   // Back/forward navigation: if alone, intercept and show the confirmation modal
   // instead of silently leaving (which would destroy the room).
@@ -137,6 +132,8 @@ export const useRoomSession = (roomId: string, username: string | undefined) => 
   }, []);
 
   return {
+    connection,
+    isConnected,
     otherUsersCountRef,
     showLeaveModal,
     setShowLeaveModal,

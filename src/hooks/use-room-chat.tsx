@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRef, useState, type MutableRefObject } from "react";
 import { toast } from "sonner";
-import { client } from "@/lib/client";
+import type { RoomConnection } from "@/lib/client";
 import { encryptText, decryptText } from "@/lib/crypto";
 import { useRealtime } from "@/lib/realtime-client";
 import type { ChatMessage } from "@/types/chat";
@@ -9,21 +9,28 @@ import type { RoomExitReason } from "./use-room-session";
 
 export const useRoomChat = (
   roomId: string,
+  connection: RoomConnection,
+  isConnected: boolean,
   username: string | undefined,
   handleExit: (reason: RoomExitReason) => void,
   otherUsersCountRef: MutableRefObject<number>,
   cryptoKey: CryptoKey | null
 ) => {
+  const client = connection.api;
   const inputRef = useRef<HTMLInputElement>(null);
   const [systemEvents, setSystemEvents] = useState<ChatMessage[]>([]);
+  const [departedUsername, setDepartedUsername] = useState<string | null>(null);
 
   const { data: messages, refetch } = useQuery({
-    queryKey: ["messages", roomId],
+    queryKey: ["messages", roomId, connection.id],
     queryFn: async () => {
       const res = await client.messages.get({ query: { roomId } });
-      if (res.error || !res.data) {
-        handleExit(res.status === 403 ? "full" : "error");
-        return null;
+      if (res.error || !res.data || !("messages" in res.data)) {
+        if (res.status === 401 || res.status === 403 || res.status === 404) {
+          handleExit(res.status === 403 ? "full" : "error");
+          return null;
+        }
+        throw new Error("Room messages unavailable");
       }
       
       if (!cryptoKey) return { messages: [] };
@@ -38,7 +45,7 @@ export const useRoomChat = (
     },
     refetchInterval: 10000,
     retry: false,
-    enabled: !!cryptoKey,
+    enabled: isConnected && !!cryptoKey,
   });
 
   const { mutateAsync: sendMessage, isPending } = useMutation({
@@ -56,8 +63,10 @@ export const useRoomChat = (
   });
 
   const activeUsersRef = useRef<Set<string>>(new Set());
+  const departedUsersRef = useRef<Set<string>>(new Set());
 
   useRealtime({
+    enabled: isConnected,
     channels: [roomId],
     events: ["chat.message", "chat.destroy", "chat.join", "chat.leave"],
     onData: ({ event, data }) => {
@@ -68,6 +77,8 @@ export const useRoomChat = (
         if (data.username === username) return;
 
         if (event === "chat.join") {
+          setDepartedUsername(null);
+          departedUsersRef.current.delete(data.username);
           if (activeUsersRef.current.has(data.username)) return;
           activeUsersRef.current.add(data.username);
           otherUsersCountRef.current = activeUsersRef.current.size;
@@ -92,16 +103,13 @@ export const useRoomChat = (
         }
 
         if (event === "chat.leave") {
-          const wasActive = activeUsersRef.current.has(data.username);
+          if (departedUsersRef.current.has(data.username)) return;
+          departedUsersRef.current.add(data.username);
           activeUsersRef.current.delete(data.username);
           otherUsersCountRef.current = activeUsersRef.current.size;
 
-          if (!wasActive) return;
 
-          toast.error(`${data.username} a quitté la room`, {
-            id: `user-leave-${data.username}`,
-            icon: "🚪",
-          });
+          setDepartedUsername(data.username);
           setSystemEvents((prev) => [
             ...prev,
             {
@@ -134,5 +142,7 @@ export const useRoomChat = (
     sendMessage,
     isSending: isPending,
     inputRef,
+    departedUsername,
+    dismissDeparture: () => setDepartedUsername(null),
   };
 };

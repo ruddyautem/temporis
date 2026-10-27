@@ -7,7 +7,7 @@ import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function RoomEntryLayout({ children }: { children: ReactNode }) {
   return (
-    <main className='relative flex min-h-dvh sm:h-dvh sm:max-h-dvh flex-col bg-[#0b121b] text-slate-100 overflow-x-hidden sm:overflow-hidden selection:bg-emerald-500/20 font-mono'>
+    <main className='entry-shell relative flex min-h-dvh sm:h-dvh sm:max-h-dvh flex-col bg-[#0b121b] text-slate-100 overflow-x-hidden sm:overflow-hidden selection:bg-emerald-500/20 font-mono'>
       <AppBackground variant='grid' />
 
       {/* Top Header Bar matching Chat RoomHeader style with high z-index so dropdown floats above everything */}
@@ -42,14 +42,14 @@ export default function RoomEntryLayout({ children }: { children: ReactNode }) {
       </header>
 
       {/* Page Content: full available height on mobile, cleanly centered and viewport-fitted on desktop */}
-      <div className='relative z-20 flex flex-1 min-h-0 flex-col items-center justify-center px-3 sm:px-6 md:px-8 lg:px-10 2xl:px-16 py-2 sm:py-3 md:py-5 2xl:py-8 w-full sm:overflow-hidden'>
-        <div className='w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-6xl flex flex-col flex-1 min-h-0 justify-center space-y-2 sm:space-y-3 md:space-y-4 2xl:space-y-8 sm:my-auto'>
+      <div className='entry-content relative z-20 flex flex-1 min-h-0 flex-col items-center justify-center px-3 sm:px-6 md:px-8 lg:px-10 2xl:px-16 py-2 sm:py-3 md:py-5 2xl:py-8 w-full sm:overflow-hidden'>
+        <div className='entry-inner w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl 2xl:max-w-6xl flex flex-col flex-1 min-h-0 justify-center space-y-2 sm:space-y-3 md:space-y-4 2xl:space-y-8 sm:my-auto'>
           {children}
         </div>
       </div>
 
       {/* Footer on both mobile and desktop */}
-      <div className='w-full sm:mt-auto relative z-10 pb-20 sm:pb-0 shrink-0'>
+      <div className='entry-footer w-full sm:mt-auto relative z-10 pb-20 sm:pb-0 shrink-0'>
         <Footer />
       </div>
     </main>
