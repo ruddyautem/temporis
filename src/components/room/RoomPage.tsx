@@ -148,7 +148,7 @@ const RoomPage = ({ connectionId }: { connectionId: string }) => {
 
         <RoomHeader />
 
-        <div className='room-workspace relative z-10 flex-1 min-h-0'>
+        <div className='relative z-10 mx-auto flex min-h-0 w-full max-w-[1120px] flex-1 p-0 sm:p-2.5 lg:px-6 lg:py-7 min-[1600px]:max-w-[1280px] min-[1600px]:py-9 min-[1920px]:max-w-[1400px] min-[1920px]:py-11 min-[2400px]:max-w-[1520px]'>
           <ChatPanel
             ref={scrollContainerRef}
             isLoading={isLoading}

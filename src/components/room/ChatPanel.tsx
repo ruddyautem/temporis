@@ -38,8 +38,8 @@ const MessageBubble = ({ msg, isOwn, youLabel }: { msg: ChatMessage; isOwn: bool
   }
 
   return (
-    <div className={isOwn ? "room-message room-message-own" : "room-message"}>
-      <div className='w-full max-w-[96%] sm:max-w-[88%] md:max-w-[82%]'>
+    <div className={`w-full border border-l-2 px-2.5 py-2 sm:px-4 sm:py-3.5 ${isOwn ? "border-emerald-500/15 border-l-emerald-400/50 bg-emerald-500/[0.03]" : "border-slate-700/40 border-l-sky-400/50 bg-[#07101b]/50"}`}>
+      <div className='w-full min-w-0'>
         {/* Header: Colored accent bar + Pseudo + (vous) + Heure */}
         <div className='mb-1 flex items-center gap-2 select-none'>
           {/* Petite barre colorée d'identification */}
@@ -68,7 +68,7 @@ const MessageBubble = ({ msg, isOwn, youLabel }: { msg: ChatMessage; isOwn: bool
         </div>
 
         {/* Message text with slight indent aligning with text */}
-        <p className='pl-3 whitespace-pre-wrap break-words text-[13px] md:text-[14px] text-slate-100 leading-relaxed font-mono selection:bg-emerald-500/30'>
+        <p className='whitespace-pre-wrap break-words text-[13px] sm:text-[14px] min-[1600px]:text-[16px] text-slate-100 leading-relaxed font-mono selection:bg-emerald-500/30'>
           {msg.clearText}
         </p>
       </div>
@@ -169,19 +169,19 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
     return (
       <div className='room-chat-column relative flex-1 min-h-0 font-mono flex flex-col'>
         <div className='room-chat-frame terminal-frame relative flex-1 min-h-0 w-full mx-auto rounded-none border border-emerald-500/30 bg-[#09111b]/85 backdrop-blur-md flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.6)]'>
-          <div className="room-conversation-heading">
-            <h1><Icon name="lock" className="h-4 w-4 text-emerald-400" />{t("conversationTitle")}</h1>
-            <div className="room-conversation-actions">
-              <div className="room-action room-identity-badge"><Icon name="user" className="h-3.5 w-3.5 shrink-0" /><span className="room-identity-name">{currentUsername}</span></div>
-              <button type="button" onClick={onCopyLink} className="room-action"><Icon name="share" className="h-3.5 w-3.5 shrink-0" /><span>{t("share")}</span></button>
-              <button type="button" onClick={onDestroy} disabled={isDestroying} className="room-action room-action-danger"><Icon name="trash" className="h-3.5 w-3.5 shrink-0" /><span>{t("destroy")}</span></button>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-emerald-500/15 px-3 py-2 sm:px-4 sm:py-4 lg:px-6 lg:py-[22px]">
+            <h1 className="hidden items-center gap-2.5 text-[13px] font-bold text-slate-100 sm:flex"><Icon name="lock" className="h-4 w-4 text-emerald-400" />{t("conversationTitle")}</h1>
+            <div className="flex min-w-0 w-full items-center gap-1.5 sm:w-auto sm:gap-2">
+              <div className="flex min-w-0 flex-1 items-center gap-1.5 border border-emerald-500/25 bg-[#0c1624] px-2 py-2 text-[10px] text-emerald-300 sm:flex-none sm:px-3"><Icon name="user" className="h-3.5 w-3.5 shrink-0" /><span className="truncate text-slate-200 sm:whitespace-normal sm:break-all">{currentUsername}</span></div>
+              <button type="button" onClick={onCopyLink} className="flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border border-emerald-500/25 bg-[#0c1624] px-2 text-[10px] text-emerald-300 transition-colors hover:border-emerald-400 hover:bg-emerald-500/10 sm:px-3"><Icon name="share" className="h-3.5 w-3.5 shrink-0" /><span>{t("share")}</span></button>
+              <button type="button" onClick={onDestroy} disabled={isDestroying} className="flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 border border-rose-400/25 bg-[#160c10] px-2 text-[10px] text-rose-400 transition-colors hover:border-rose-400 hover:bg-rose-400/10 disabled:cursor-wait disabled:opacity-40 sm:px-3"><Icon name="trash" className="h-3.5 w-3.5 shrink-0" /><span>{t("destroy")}</span></button>
             </div>
           </div>
 
           {/* Top Intelligent Telemetry & Life-Line Strip */}
           <div
             suppressHydrationWarning
-            className='room-telemetry border-b border-slate-800/80 bg-[#070e17]/95 px-3.5 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between gap-3 text-[10px] uppercase select-none relative z-10'
+            className='border-b border-slate-800/80 bg-[#070e17]/95 px-3 py-2 sm:px-4 sm:py-2.5 lg:px-6 lg:py-3 flex items-center justify-between gap-3 text-[10px] uppercase select-none relative z-10'
           >
             {/* Left: Live status beacon synced in color with stateTheme */}
             <div className='flex items-center gap-2.5 min-w-0'>
@@ -232,15 +232,15 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
           {/* Messages scroll feed */}
           <div
             ref={containerRef}
-            className='room-message-feed flex-1 min-h-0 overflow-y-auto px-3.5 py-4 sm:px-6 sm:py-5 w-full overscroll-contain touch-pan-y'
+            className='flex-1 min-h-0 overflow-y-auto px-3 py-3 sm:px-6 sm:py-5 min-[1600px]:p-7 w-full overscroll-contain touch-pan-y'
           >
             {isLoading ? (
               <div className='flex h-full items-center justify-center text-emerald-400/70 text-[11px] md:text-[12px] uppercase tracking-widest animate-pulse'>
                 {t("searchingSignal")}
               </div>
             ) : messages.length === 0 ? (
-              <div className='room-empty flex flex-col h-full items-center justify-center text-center px-4 select-none'>
-                <div className='relative p-3 border border-emerald-500/30 bg-emerald-500/[0.04] mb-3 rounded-none'>
+              <div className='flex flex-col h-full items-center justify-center gap-2 sm:gap-3 text-center px-2 sm:px-4 select-none'>
+                <div className='relative p-2 sm:p-3 border border-emerald-500/30 bg-emerald-500/[0.04] rounded-none'>
                   {/* 4 crisp tactical cyber corners */}
                   <div className='absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-emerald-400 pointer-events-none' />
                   <div className='absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-emerald-400 pointer-events-none' />
@@ -265,7 +265,7 @@ const ChatPanel = forwardRef<HTMLDivElement, ChatPanelProps>(
                     </span>
                   </div>
                 </div>
-                <h2>{t(inviteCopied ? "inviteCopiedTitle" : "emptyTitle")}</h2><p>{t(inviteCopied ? "inviteCopiedDescription" : "emptyDescription")}</p>
+                <h2 className="text-lg leading-snug font-bold tracking-tight text-slate-200 sm:text-[23px] min-[1600px]:text-[30px]">{t(inviteCopied ? "inviteCopiedTitle" : "emptyTitle")}</h2><p className="max-w-[38ch] text-[11px] leading-relaxed text-slate-400 sm:text-xs sm:leading-[1.9] min-[1600px]:text-sm">{t(inviteCopied ? "inviteCopiedDescription" : "emptyDescription")}</p>
               </div>
             ) : (
               <div className='flex flex-col min-h-full space-y-3 sm:space-y-3.5'>

@@ -100,7 +100,7 @@ export default function Lobby() {
         <h1><span className="text-emerald-400">&gt;</span>TEMPOR<span className="text-emerald-400">IS</span><span className="lobby-cursor" aria-hidden="true">_</span></h1>
         <p>{t("heroDescription")}</p>
       </div>
-      <div className="lobby-panels">
+      <div className="lobby-panels [@media(min-width:1600px)_and_(min-height:1000px)]:min-h-[min(68dvh,760px)] [@media(min-width:1600px)_and_(min-height:1000px)]:[--entry-scale:1.18] [@media(min-width:1920px)_and_(min-height:1000px)]:[--entry-scale:1.25] [@media(min-width:2400px)_and_(min-height:1000px)]:[--entry-scale:1.35]">
         <section className="lobby-panel lobby-panel-create" aria-labelledby="create-title">
           <div className="lobby-panel-heading">
             <h2 id="create-title"><Icon name="plus" className="h-4 w-4 text-emerald-400" />{t("panelCreate")}</h2>
@@ -108,13 +108,15 @@ export default function Lobby() {
           </div>
 
           <section className="session-duration" aria-labelledby="duration-title">
-            <div className="session-duration-heading"><h3 id="duration-title">{t("chooseTime")}</h3><span className="session-duration-limit">05 — 30 MIN</span></div>
-            <div className="session-time-display">
+            <div className="session-duration-heading"><h3 id="duration-title" className="[@media(min-width:1600px)_and_(min-height:1000px)]:!text-[15px]">{t("chooseTime")}</h3><span className="session-duration-limit [@media(min-width:1600px)_and_(min-height:1000px)]:!text-[13px]">05 — 30 MIN</span></div>
+            <div className="session-time-display [@media(min-width:1600px)_and_(min-height:1000px)]:!justify-start [@media(min-width:1600px)_and_(min-height:1000px)]:!pb-0 [@media(min-width:1600px)_and_(min-height:1000px)]:[&_.session-time-slider]:!mt-0">
               <div className="session-duration-summary">
                 <div className="session-time-value" aria-live="polite"><span>{String(ttl).padStart(2, "0")}</span><span>{t("minutes")}</span></div>
                 <div className="session-expiry"><span><Icon name="clock" className="h-3.5 w-3.5" />{t("autoDeleteLabel")}</span><p>{t("timeCaption")}</p></div>
               </div>
-              <SegmentedDurationSlider ref={durationSliderRef} ttl={ttl} onChange={setTtl} label={t("chooseTime")} minutesLabel={t("minutes")} />
+              <div className="[@media(min-width:1600px)_and_(min-height:1000px)]:flex [@media(min-width:1600px)_and_(min-height:1000px)]:min-h-14 [@media(min-width:1600px)_and_(min-height:1000px)]:flex-1 [@media(min-width:1600px)_and_(min-height:1000px)]:items-center [@media(min-width:1600px)_and_(min-height:1000px)]:justify-center [@media(min-width:1600px)_and_(min-height:1000px)]:[&_.session-time-slider]:w-5/6 [@media(min-width:1600px)_and_(min-height:1000px)]:[&_.session-time-slider]:scale-[1.2]">
+                <SegmentedDurationSlider ref={durationSliderRef} ttl={ttl} onChange={setTtl} label={t("chooseTime")} minutesLabel={t("minutes")} />
+              </div>
             </div>
             <div className="session-time-options" role="group" aria-labelledby="duration-title">
               {TTL_OPTIONS.map((minutes) => (
@@ -147,7 +149,7 @@ export default function Lobby() {
             <h3>{t("manifestoTitle")}<br /><span>{t("manifestoAccent")}</span></h3>
             <p>{t("manifestoDescription")}</p>
           </div>
-          <div className="lobby-principles">
+          <div className="lobby-principles [@media(min-width:1600px)_and_(min-height:1000px)]:flex-1 [@media(min-width:1600px)_and_(min-height:1000px)]:justify-evenly">
             {([
               { icon: "shield", title: "cardProtoTitle", description: "cardProtoDesc" },
               { icon: "user", title: "anonymousTitle", description: "anonymousDescription" },
@@ -162,8 +164,12 @@ export default function Lobby() {
           <div className="lobby-protocol"><Icon name="lock" className="h-3 w-3" /><span>AES-256-GCM</span><span aria-hidden="true">/</span><span>{t("protocolLabel")}</span></div>
         </section>
       </div>
-      <div className="lobby-steps" aria-label={t("stepsLabel")}>
-        {["stepCreate", "stepShare", "stepDisappear"].map((step, index) => <span key={step}><b>0{index + 1}</b>{t(step)}</span>)}
+      <div className="mt-6 grid grid-cols-3 gap-2 text-center text-[10px] leading-relaxed text-slate-400 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-9 sm:gap-y-[18px] sm:text-left lg:mt-[clamp(14px,2dvh,24px)] [@media(min-width:1600px)_and_(min-height:1000px)]:text-xs" aria-label={t("stepsLabel")}>
+        {["stepCreate", "stepShare", "stepDisappear"].map((step, index) => (
+          <span className="flex min-w-0 flex-col items-center gap-1 sm:flex-row sm:gap-2" key={step}>
+            <b className="font-normal text-emerald-400">0{index + 1}</b>{t(step)}
+          </span>
+        ))}
       </div>
     </div>
   );

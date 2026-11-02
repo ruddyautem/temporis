@@ -28,7 +28,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
   };
 
   return (
-    <div className='room-composer border-t border-emerald-500/20 px-3 py-2.5 sm:px-5 sm:py-3 bg-[#08101a]/95 shrink-0 font-mono'>
+    <div className='border-t border-emerald-500/20 px-3 pt-2.5 pb-[max(10px,env(safe-area-inset-bottom))] sm:px-5 sm:py-3 lg:px-6 lg:pt-[18px] bg-[#09121d]/90 shrink-0 font-mono'>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -51,7 +51,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
               }
             }}
             placeholder={t("inputPlaceholder")}
-            className='w-full rounded-none border border-slate-700/70 bg-[#0c1624] pl-7 pr-3 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:bg-[#0e1b2d] focus:outline-none transition-all placeholder:text-left'
+            className='w-full rounded-none border border-emerald-500/20 bg-[#070e17]/50 pl-7 pr-3 py-2.5 sm:py-[15px] text-[16px] sm:text-sm placeholder:text-xs sm:placeholder:text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:bg-[#0e1b2d] focus:outline-none transition-all placeholder:text-left'
           />
         </div>
         <button
@@ -64,7 +64,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
           }}
           title={t("send")}
           aria-label={t("send")}
-          className='group flex items-center justify-center gap-1.5 cursor-pointer rounded-none bg-emerald-500 border border-emerald-400 px-4 py-2.5 sm:py-3 text-slate-950 font-bold transition-all hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+          className='group flex items-center justify-center gap-1.5 cursor-pointer rounded-none bg-emerald-500 border border-emerald-400 min-h-11 min-w-11 px-2.5 py-2.5 sm:px-[18px] sm:py-[15px] text-slate-950 font-bold transition-all hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
         >
           <span className='hidden sm:inline text-[11px] uppercase tracking-wider'>{t("send")}</span>
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='w-4 h-4'>
@@ -72,7 +72,7 @@ const ChatComposer = ({ inputRef, isReady, isSending, onSend }: ChatComposerProp
           </svg>
         </button>
       </form>
-      <p className="room-composer-hint">{t("composerHint")}</p>
+      <p className="mt-1.5 text-[8px] tracking-[.04em] text-slate-500 sm:mt-2.5 sm:text-[9px]">{t("composerHint")}</p>
     </div>
   );
 };
