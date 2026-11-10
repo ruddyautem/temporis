@@ -9,9 +9,8 @@ class AuthError extends Error {
 }
 
 export const authMiddleware = new Elysia({ name: "auth" })
-  .error({ AuthError })
-  .onError({ as: "scoped" }, ({ code, set }) => {
-    if (code === "AuthError") {
+  .onError({ as: "scoped" }, ({ error, set }) => {
+    if (error instanceof AuthError) {
       set.status = 401;
       return { error: "Unauthorized" };
     }
